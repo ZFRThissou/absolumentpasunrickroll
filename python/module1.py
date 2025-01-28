@@ -6,7 +6,7 @@ import time
 import os
 import requests
 
-memes_folder = "memes"
+memes_folder = "../../image/mèmes"
 
 # Créer les dossiers "vidéos" et "images" si ils n'existent pas
 videos_folder = os.path.join(memes_folder, "vidéos")
