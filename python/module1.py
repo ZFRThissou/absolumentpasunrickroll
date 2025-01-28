@@ -64,8 +64,8 @@ def scrape_meme_urls():
         # Ouvrir la page cible
         driver.get("https://trouveton.meme/memes/recent/")
         time.sleep(2)  # Attendre que la page charge initialement
-        for i in range (35):
-            scroll_to_bottom()
+        for i in range (40):
+            scroll_to_bottom(driver)
 
         # Trouver les éléments contenant les liens
         memes = driver.find_elements(By.CSS_SELECTOR, "a[href*='/memes/']")
