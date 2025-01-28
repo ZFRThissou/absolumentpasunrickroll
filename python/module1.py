@@ -4,14 +4,16 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 import time
 import os
-import shutil
+import requests
 
-downloads_folder = "C:/Users/Eleve/Downloads"
+memes_folder = "memes"
 
-def scroll_to_bottom(driver):
-    # Faire défiler la page jusqu'à la fin
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(2)  # Attendre un peu pour charger le contenu
+# Créer les dossiers "vidéos" et "images" si ils n'existent pas
+videos_folder = os.path.join(memes_folder, "vidéos")
+images_folder = os.path.join(memes_folder, "images")
+
+os.makedirs(videos_folder, exist_ok=True)
+os.makedirs(images_folder, exist_ok=True)
 
 def get_file_extension(url):
     # Extraire l'extension du fichier à partir de l'URL
@@ -34,13 +36,15 @@ def categorize_urls(urls):
 
     return video_urls, image_urls
 
-def rename_file(file_path):
-    # Renommer un fichier en remplaçant les underscores par des espaces
-    directory, filename = os.path.split(file_path)
-    new_filename = filename.replace('_', ' ')
-    new_path = os.path.join(directory, new_filename)
-    os.rename(file_path, new_path)
-    return new_path
+def download_file(url, folder):
+    # Télécharger le fichier et le sauvegarder dans le dossier spécifié
+    local_filename = url.split('/')[-1]
+    local_path = os.path.join(folder, local_filename)
+    with requests.get(url, stream=True) as r:
+        with open(local_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    return local_path
 
 def scrape_meme_urls():
     # Configurer le WebDriver
@@ -64,72 +68,19 @@ def scrape_meme_urls():
         urls.remove("https://trouveton.meme/memes/recent/")
         urls.remove("https://trouveton.meme/memes/popular/")
 
-        print("Mèmes trouvés:")
-        for url in urls:
-            print(url)
-
         # Catégoriser les URLs en vidéo ou image
         video_urls, image_urls = categorize_urls(urls)
 
-        print("\nURLs de vidéos trouvées:")
-        usb_folder = "D:/Site mèmes/image/mèmes/vidéos"
+        # Télécharger les vidéos
         for url in video_urls:
-            print(url)
-            driver.execute_script(f"window.open('{url}');")
-            time.sleep(2)
-            try:
-                files = [
-                    os.path.join(downloads_folder, f)
-                    for f in os.listdir(downloads_folder)
-                    if os.path.isfile(os.path.join(downloads_folder, f))
-                ]
-                latest_file = max(files, key=os.path.getmtime)
-                shutil.move(latest_file, usb_folder)
+            download_file(url, videos_folder)
 
-                # Renommer le fichier après le déplacement
-                renamed_file = os.path.join(usb_folder, os.path.basename(latest_file))
-                renamed_file = rename_file(renamed_file)
-                print(f"Fichier déplacé et renommé : {renamed_file}")
-
-            except FileNotFoundError:
-                print("Le dossier Téléchargements est introuvable.")
-            except PermissionError:
-                print("Permission refusée. Vérifie les droits d'accès.")
-            except Exception as e:
-                print(f"Une erreur s'est produite : {e}")
-
-        print("\nURLs d'images trouvées:")
-        usb_folder = "D:/Site mèmes/image/mèmes/images"
+        # Télécharger les images
         for url in image_urls:
-            print(url)
-            driver.execute_script(f"window.open('{url}');")
-            time.sleep(2)
-            try:
-                files = [
-                    os.path.join(downloads_folder, f)
-                    for f in os.listdir(downloads_folder)
-                    if os.path.isfile(os.path.join(downloads_folder, f))
-                ]
-                latest_file = max(files, key=os.path.getmtime)
-                shutil.move(latest_file, usb_folder)
-
-                # Renommer le fichier après le déplacement
-                renamed_file = os.path.join(usb_folder, os.path.basename(latest_file))
-                renamed_file = rename_file(renamed_file)
-                print(f"Fichier déplacé et renommé : {renamed_file}")
-
-            except FileNotFoundError:
-                print("Le dossier Téléchargements est introuvable.")
-            except PermissionError:
-                print("Permission refusée. Vérifie les droits d'accès.")
-            except Exception as e:
-                print(f"Une erreur s'est produite : {e}")
-
-        return video_urls, image_urls
+            download_file(url, images_folder)
 
     except NoSuchElementException as e:
         print(f"Erreur lors de la récupération des mèmes : {e}")
-        return [], []
 
     finally:
         # Fermer le navigateur
