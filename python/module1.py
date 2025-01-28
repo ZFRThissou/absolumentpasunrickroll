@@ -15,6 +15,11 @@ images_folder = os.path.join(memes_folder, "images")
 os.makedirs(videos_folder, exist_ok=True)
 os.makedirs(images_folder, exist_ok=True)
 
+def scroll_to_bottom(driver):
+    # Faire défiler la page jusqu'à la fin
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)  # Attendre un peu pour charger le contenu
+
 def get_file_extension(url):
     # Extraire l'extension du fichier à partir de l'URL
     return os.path.splitext(url)[1].lower()
@@ -59,6 +64,8 @@ def scrape_meme_urls():
         # Ouvrir la page cible
         driver.get("https://trouveton.meme/memes/recent/")
         time.sleep(2)  # Attendre que la page charge initialement
+        for i in range (35):
+            scroll_to_bottom()
 
         # Trouver les éléments contenant les liens
         memes = driver.find_elements(By.CSS_SELECTOR, "a[href*='/memes/']")
