@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             videoCard.classList.add('video-card');
             videoCard.innerHTML = `
                 <video controls>
-                    <source src="../image/mèmes/vidéos/${title}.mp4">
+                    <source src="image/mèmes/vidéos/${title}.mp4">
                 </video>
                 <div class="video-info">
                     <h3>${title}</h3>
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const audioCard = document.createElement('div');
             audioCard.classList.add('video-card');
             audioCard.innerHTML = `
-                <button class="button" data-sound="../image/mèmes/audios/${title}.mp3">Play Sound</button>
+                <button class="button" data-sound="image/mèmes/audios/${title}.mp3">Play Sound</button>
                 <div class="video-info">
                     <h3>${title}</h3>
                 </div>
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageCard = document.createElement('div');
             imageCard.classList.add('video-card');
             imageCard.innerHTML = `
-                <img src="../image/mèmes/images/${title}.png" alt="Video thumbnail">
+                <img src="image/mèmes/images/${title}.png" alt="Video thumbnail">
                 <div class="video-info">
                     <h3>${title}</h3>
                 </div>
