@@ -34,6 +34,28 @@ body {
     color: #000000;
 }
 
+.contact {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    right: 15px;
+    top: 7px;
+    height: 60px;
+    justify-content: center;
+}
+
+.contact img {
+    height: 40px;
+    margin-bottom: -20px;
+}
+
+.contact p {
+    font-size: 15px;
+    white-space: nowrap;
+    color: #000000;
+}
+
 .search-bar {
     padding-left: 122px;
     padding-top: 10px;
@@ -57,14 +79,7 @@ body {
     width: 100px;
     background-color: #ffffff;
     color: #000000;
-    padding: 5px;
     box-sizing: border-box;
-}
-
-.sidebar img {
-    width: 40px;
-    display: block;
-    margin: 0 auto 5px;
 }
 
 .sidebar ul {
@@ -73,7 +88,7 @@ body {
 }
 
 .sidebar ul li {
-    margin: 15px 0;
+    margin: 8px 0;
     text-align: center;
 }
 
