@@ -11,7 +11,7 @@
             try {
                 let response = await fetch('https://ipapi.co/json/');
                 let data = await response.json();
-                let langue = data.languages.split(',')[0];
+                let langue = data.region_code;
                 if (langue && langue !== 'fr') {
                     traduireTexte(langue);
                 }
