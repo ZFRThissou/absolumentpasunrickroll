@@ -205,10 +205,7 @@ body {
 .button-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-    height: 100%;
-    margin-left: 83px;
-    margin-right: 83px;
+    margin-bottom: 20px;
 }
 
 .equal-button {
@@ -216,13 +213,14 @@ body {
     font-size: 50px;
     cursor: pointer;
     text-align: center;
-    margin-right: 83px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     aspect-ratio: 16 / 9;
     color: white;
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    max-width: 408px;
+    min-width: 230px;
 }
 
 #Vidéos {
