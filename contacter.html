@@ -21,70 +21,92 @@
         .social-links {
             list-style: none;
             margin-left: 3%;
+            padding: 0;
         }
         .social-links li {
-            display: flex;
-            align-items: center;
+            margin: 10px 0;
             margin-bottom: 33px;
         }
-        .social-links img {
-            width: 35px;
-            height: 35px;
-            margin-right: 10px;
-        }
-        .social-links a {
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
             color: black;
             font-weight: bold;
             font-size: x-large;
         }
+        .social-link img {
+            height: 35px;
+            width: auto;
+            width: 35px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="topbar">
-        <a href="https://absolumentpasunrickroll.netlify.app/" style="text-decoration:none" class="logo">
-            <img src="image/logo/logo.png" alt="Logo">
+        <a href="../html/index.html" style="text-decoration:none" class="logo">
+            <img src="../image/logo/logo.png" alt="Logo">
             <p>Absolumentpasunrickroll</p>
         </a>
-        <a href="contacter.html" style="text-decoration:none" class="contact">
-            <img src="image/icones/contacter_cliquer.png" alt="Contact Icon">
+        <a href="../html/contacter.html" style="text-decoration:none" class="contact">
+            <img src="../image/icones/contacter_cliquer.png" alt="Contact Icon">
             <p>Nous contacter</p>
         </a>
     </div>
     <div class="sidebar">
         <ul>
             <li>
-                <a href="https://absolumentpasunrickroll.netlify.app/"><img src="image/icones/accueil.png" alt="Accueil Icon">Accueil</a>
+                <a href="index.html"><img src="../image/icones/accueil.png" alt="Accueil Icon">Accueil</a>
             </li>
             <li>
-                <a href="vidéos.html"><img src="image/icones/vidéos.png" alt="Vidéos Icon">Vidéos</a>
+                <a href="vidéos.html"><img src="../image/icones/vidéos.png" alt="Vidéos Icon">Vidéos</a>
             </li>
             <li>
-               <a href="audios.html"><img src="image/icones/audios.png" alt="Audios Icon">Audios</a>
+               <a href="audios.html"><img src="../image/icones/audios.png" alt="Audios Icon">Audios</a>
             </li>
             <li>
-                <a href="images.html"><img src="image/icones/images.png" alt="Images Icon">Images</a>
+                <a href="images.html"><img src="../image/icones/images.png" alt="Images Icon">Images</a>
             </li>
             <li>
-                <a href="nouveau.html"><img src="image/icones/nouveau.png" alt="Nouveau Icon">Nouveaux</a>
+                <a href="nouveau.html"><img src="../image/icones/nouveau.png" alt="Nouveau Icon">Nouveaux</a>
             </li>
             <li>
-                <a href="favoris.html"><img src="image/icones/favoris.png" alt="Favoris Icon">Favoris</a>
+                <a href="favoris.html"><img src="../image/icones/favoris.png" alt="Favoris Icon">Favoris</a>
             </li>
             <li>
-                <a href="mèmeswars.html"><img src="image/icones/mèmeswars.png" alt="Mèmes Wars Icon">Mèmes Wars</a>
+                <a href="mèmeswars.html"><img src="../image/icones/mèmeswars.png" alt="Mèmes Wars Icon">Mèmes Wars</a>
             </li>
         </ul>
     </div>
     <div class="main-content">
         <h1>Retrouvez-nous sur :</h1>
         <ul class="social-links">
-            <li><img src="image/logo/YouTube.png" alt="YouTube Icon"> <a href="https://www.youtube.com/@AbsolumentPasUnRickRoll" target="_blank">Chaîne YouTube</a></li>
-            <li><img src="image/logo/Discord.png" alt="Discord Icon"> <a href="https://discord.gg/gP6p4P5Zzr" target="_blank">Discord</a></li>
-            <li><img src="image/logo/Instagram.png" alt="Instagram Icon"> <a href="https://www.instagram.com/absolumentpasunrickroll/" target="_blank">Instagram</a></li>
-            <li><img src="image/logo/Tiktok.png" alt="Tiktok Icon"> <a href="https://www.tiktok.com/@absolumentpasunrickroll" target="_blank">Tiktok</a></li>
-            <li><img src="image/logo/Twitch.png" alt="Twitch Icon"> <a href="https://www.twitch.tv/absolumentpasunrickroll" target="_blank">Twitch</a></li>
-            <li><img src="image/logo/Gmail.png" alt="Gmail Icon"> <a href="mailto:absolumentpasunrickroll@gmail.com" target="_blank">Gmail</a></li>
+            <li><a href="https://www.youtube.com/@AbsolumentPasUnRickRoll" target="_blank" class="social-link">
+                <img src="../image/logo/YouTube.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </a></li>
+            <li><a href="https://discord.gg/h6uRnpDU" target="_blank" class="social-link">
+                <img src="../image/logo/Discord.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </li>
+            <li><a href="https://www.instagram.com/absolumentpasunrickroll/" target="_blank" class="social-link">
+                <img src="../image/logo/Instagram.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </a></li>
+            <li><a href="https://www.tiktok.com/@absolumentpasunrickroll" target="_blank" class="social-link">
+                <img src="../image/logo/Tiktok.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </a></li>
+            <li><a href="https://www.twitch.tv/absolumentpasunrickroll" target="_blank" class="social-link">
+                <img src="../image/logo/Twitch.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </a></li>
+            <li><a href="mailto:absolumentpasunrickroll@gmail.com" target="_blank" class="social-link">
+                <img src="../image/logo/Gmail.png" alt="YouTube Icon">
+                <span>Chaîne YouTube</span>
+            </a></li>
         </ul>
 </body>
 </html>
