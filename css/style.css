@@ -210,7 +210,7 @@ body {
 
 .equal-button {
     flex: 1;
-    font-size: 50px;
+    font-size: 45px;
     cursor: pointer;
     text-align: center;
     background-size: contain;
@@ -220,7 +220,7 @@ body {
     color: white;
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
     max-width: 408px;
-    min-width: 231.35px;
+    min-width: 209px;
 }
 
 #Vidéos {
