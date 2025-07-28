@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absolumentpasunrickroll</title>
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../image/logo/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+    <script src="../js/recherche.js"></script>
+    <script src="../js/favoris vidéo.js"></script>
+    <style>
+        .video-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .download-share {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        .download-button, .share-button {
+            background-color: transparent;
+            text-decoration: none;
+            border: none;
+            color: #000000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+        }
+    </style>
+    <script>
+        function shareVideo(videoUrl, videoTitle) {
+            if (navigator.share) {
+                navigator.share({
+                    title: videoTitle,
+                    text: `Regarde cette vidéo : ${videoTitle}`,
+                    url: videoUrl
+                })
+                .then(() => console.log('Partagé avec succès'))
+                .catch(error => console.error('Erreur de partage', error));
+            } else {
+                navigator.clipboard.writeText(window.location.origin + '/' + videoUrl)
+                    .then(() => alert('Lien copié dans le presse-papier !'))
+                    .catch(err => alert("Impossible de copier le lien : " + err));
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="topbar">
+        <a href="../html/index.html" class="logo" style="text-decoration:none">
+            <img src="../image/logo/logo.png" alt="Logo">
+            <p>Absolumentpasunrickroll</p>
+        </a>
+        <a href="../html/contacter.html" class="contact" style="text-decoration:none">
+            <img src="../image/icones/contacter.png" alt="Contact Icon">
+            <p>Nous contacter</p>
+        </a>
+        <span class="search-bar">
+            <input type="text" id="search-bar" placeholder="Rechercher des vidéos...">
+        </span>
+    </div>
+
+    <div class="sidebar">
+        <ul>
+            <li><a href="index.html"><img src="../image/icones/accueil.png" alt="Accueil Icon">Accueil</a></li>
+            <li><a href="vidéos.html"><img src="../image/icones/vidéos_cliquer.png" alt="Vidéos Icon">Vidéos</a></li>
+            <li><a href="audios.html"><img src="../image/icones/audios.png" alt="Audios Icon">Audios</a></li>
+            <li><a href="images.html"><img src="../image/icones/images.png" alt="Images Icon">Images</a></li>
+            <li><a href="nouveau.html"><img src="../image/icones/nouveau.png" alt="Nouveau Icon">Nouveaux</a></li>
+            <li><a href="favoris.html"><img src="../image/icones/favoris.png" alt="Favoris Icon">Favoris</a></li>
+            <li><a href="mèmeswars.html"><img src="../image/icones/mèmeswars.png" alt="Mèmes Wars Icon">Mèmes Wars</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="video-grid"></div>
+    </div>
+
+    <script src="../js/videos.js"></script>
+    <script src="../js/infinite-scroll.js"></script>
+</body>
+</html>
