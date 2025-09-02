@@ -1,5 +1,5 @@
 let currentIndex = 0;
-const videosPerBatch = 8; // ✅ maintenant 12 vidéos à la fois
+const videosPerBatch = 8; // ✅ maintenant 8 vidéos à la fois
 let loading = false;
 
 function createVideoCard(video) {
@@ -27,7 +27,7 @@ function loadMoreVideos() {
     loading = true;
     document.getElementById('loader').style.display = "block";
 
-    // Générer un temps aléatoire entre 300 ms et 1200 ms
+    // délai aléatoire 300ms–1200ms
     const randomDelay = Math.floor(Math.random() * (1200 - 300 + 1)) + 300;
 
     setTimeout(() => {
@@ -39,13 +39,27 @@ function loadMoreVideos() {
         currentIndex += videosPerBatch;
         document.getElementById('loader').style.display = "none";
         loading = false;
+
+        // Si plus de vidéos à charger → on arrête d’observer
+        if (currentIndex >= videos.length) {
+            observer.disconnect();
+            document.getElementById('loader').innerHTML = "✔️ Toutes les vidéos sont affichées";
+        }
     }, randomDelay);
 }
 
-window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+// 🔍 Intersection Observer
+const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
         loadMoreVideos();
     }
-});
+}, { threshold: 1.0 });
 
-document.addEventListener('DOMContentLoaded', loadMoreVideos);
+// Ajouter un sentinel après la grid
+document.addEventListener('DOMContentLoaded', () => {
+    const sentinel = document.createElement('div');
+    sentinel.id = "sentinel";
+    document.querySelector('.main-content').appendChild(sentinel);
+    observer.observe(sentinel);
+    loadMoreVideos(); // premier lot
+});
