@@ -1,5 +1,6 @@
 let currentIndex = 0;
-const videosPerBatch = 4;
+const videosPerBatch = 12; // ✅ maintenant 12 vidéos à la fois
+let loading = false;
 
 function createVideoCard(video) {
     return `
@@ -9,10 +10,12 @@ function createVideoCard(video) {
             </video>
             <div class="video-info">
                 <h3>${video.titre}</h3>
-                <button class="add-to-favorites">Ajouter aux favoris</button>
-                <div class="download-share">
-                    <a class="download-button" href="${video.fichier}" download>Télécharger</a>
-                    <button class="share-button" onclick="shareVideo('${video.fichier}', '${video.titre.replace(/'/g, "\\'")}')">Partager</button>
+                <div class="video-actions">
+                    <button class="add-to-favorites">Ajouter aux favoris</button>
+                    <div class="download-share">
+                        <a class="download-button" href="${video.fichier}" download>Télécharger</a>
+                        <button class="share-button" onclick="shareVideo('${video.fichier}', '${video.titre.replace(/'/g, "\\'")}')">Partager</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -20,12 +23,20 @@ function createVideoCard(video) {
 }
 
 function loadMoreVideos() {
-    const container = document.querySelector('.video-grid');
-    const nextVideos = videos.slice(currentIndex, currentIndex + videosPerBatch);
-    nextVideos.forEach(video => {
-        container.insertAdjacentHTML('beforeend', createVideoCard(video));
-    });
-    currentIndex += videosPerBatch;
+    if (loading) return;
+    loading = true;
+    document.getElementById('loader').style.display = "block";
+
+    setTimeout(() => { // petite pause pour simuler un vrai chargement
+        const container = document.querySelector('.video-grid');
+        const nextVideos = videos.slice(currentIndex, currentIndex + videosPerBatch);
+        nextVideos.forEach(video => {
+            container.insertAdjacentHTML('beforeend', createVideoCard(video));
+        });
+        currentIndex += videosPerBatch;
+        document.getElementById('loader').style.display = "none";
+        loading = false;
+    }, 500);
 }
 
 window.addEventListener('scroll', () => {
