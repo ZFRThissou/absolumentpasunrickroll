@@ -33,6 +33,13 @@
             font-size: 1rem;
             padding: 0;
         }
+        /* Loader en bas de page */
+        #loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-weight: bold;
+        }
     </style>
     <script>
         function shareVideo(videoUrl, videoTitle) {
@@ -81,8 +88,10 @@
 
     <div class="main-content">
         <div class="video-grid"></div>
+        <div id="loader">Chargement...</div>
     </div>
 
+    <!-- Scripts pour le scroll infini -->
     <script src="../js/videos.js"></script>
     <script src="../js/infinite-scroll.js"></script>
 </body>
