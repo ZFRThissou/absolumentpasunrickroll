@@ -27,7 +27,10 @@ function loadMoreVideos() {
     loading = true;
     document.getElementById('loader').style.display = "block";
 
-    setTimeout(() => { // petite pause pour simuler un vrai chargement
+    // Générer un temps aléatoire entre 300 ms et 1200 ms
+    const randomDelay = Math.floor(Math.random() * (1200 - 300 + 1)) + 300;
+
+    setTimeout(() => {
         const container = document.querySelector('.video-grid');
         const nextVideos = videos.slice(currentIndex, currentIndex + videosPerBatch);
         nextVideos.forEach(video => {
@@ -36,7 +39,7 @@ function loadMoreVideos() {
         currentIndex += videosPerBatch;
         document.getElementById('loader').style.display = "none";
         loading = false;
-    }, 500);
+    }, randomDelay);
 }
 
 window.addEventListener('scroll', () => {
