@@ -1,5 +1,5 @@
 let currentIndex = 0;
-const videosPerBatch = 8; // ✅ maintenant 8 vidéos à la fois
+const videosPerBatch = 4; // ✅ maintenant 8 vidéos à la fois
 let loading = false;
 
 function createVideoCard(video) {
