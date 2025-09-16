@@ -53,7 +53,7 @@ const observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
         loadMoreVideos();
     }
-}, { threshold: 1.0 });
+}, { rootMargin: "100px" }); 
 
 // Ajouter un sentinel après la grid
 document.addEventListener('DOMContentLoaded', () => {
