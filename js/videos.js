@@ -25,6 +25,7 @@ const videos = [
     { titre: "lebron james", fichier: "image/mèmes/vidéos/lebron james.mp4" },
     { titre: "mais ça va pas ou quoi binobile", fichier: "image/mèmes/vidéos/mais ça va pas ou quoi  binobile.mp4" },
     { titre: "mec qui marche avec musique bizarre", fichier: "image/mèmes/vidéos/mec qui marche avec musique bizarre.mp4" },
+    { titre: "message de la france non", fichier: "image/mèmes/vidéos/message de la france non.mp4"},
     { titre: "o. k.", fichier: "image/mèmes/vidéos/o. k..mp4" },
     { titre: "oh putain laurent excuse moi de la réaction laurent baffie", fichier: "image/mèmes/vidéos/oh putain laurent excuse moi de la réaction laurent baffie.mov" },
     { titre: "oh sil vous plaît mon avion", fichier: "image/mèmes/vidéos/oh sil vous plaît mon avion.mp4" },
