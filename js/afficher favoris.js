@@ -5,21 +5,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoGrid = document.querySelector('.video-grid');
 
     // Afficher les vidéos favorites
-    if (videoFavorites.length + audioFavorites.length + imageFavorites.length === 0) {
-        videoGrid.innerHTML = '<p>Aucun mème favorit enregistrée.</p>';
-    }
     if (videoFavorites.length > 0) {
-        videoFavorites.forEach(title => {
+        videoFavorites.forEach(filename => {
+            const ext = filename.split('.').pop().toLowerCase();
+            let mime = '';
+            // Ajoute les mime-types connus pour chaque format
+            if (ext === 'mp4') mime = 'video/mp4';
+            else if (ext === 'webm') mime = 'video/webm';
+            else if (ext === 'mov') mime = 'video/quicktime';
+            else mime = `video/${ext}`;
+
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
             videoCard.innerHTML = `
                 <video controls>
-                    <source src="image/mèmes/vidéos/${title}.mp4">
+                    <source src="image/mèmes/vidéos/${filename}" type="${mime}">
+                    Votre navigateur ne supporte pas ce format (${filename})
                 </video>
                 <div class="video-info">
-                    <h3>${title}</h3>
+                    <h3>${filename}</h3>
                 </div>
-            `;
+        `    ;
             videoGrid.appendChild(videoCard);
         });
     }
@@ -65,3 +71,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
