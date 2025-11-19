@@ -175,7 +175,7 @@ body {
 
 
 
-.fav-btn {
+/*.fav-btn {
     background-color: transparent;
     border: none;
     font-size: 1.2em;
@@ -187,7 +187,7 @@ body {
 
 .fav-btn.active {
     color: #ff9900;
-}
+}*/
 
 
 
@@ -247,8 +247,4 @@ body {
 
 #Images {
     background-image: url(../image/logo/Images.png);
-}
-
-#Nouveaux{
-    background-image: url(../image/icones/nouveau.png);
 }
