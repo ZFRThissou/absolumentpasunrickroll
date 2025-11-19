@@ -18,6 +18,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </video>
                 <div class="video-info">
                     <h3>${title}</h3>
+                    <div class="video-actions">
+                        <button class="add-to-favorites">Ajouter aux favoris</button>
+                        <div class="download-share">
+                            <a class="download-button" href="${video.fichier}" download>Télécharger</a>
+                            <button class="share-button" onclick="shareVideo('${video.fichier}', '${video.titre.replace(/'/g, "\\'")}')">Partager</button>
+                        </div>
+                    </div>
                 </div>
             `;
             videoGrid.appendChild(videoCard);
@@ -65,3 +72,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
