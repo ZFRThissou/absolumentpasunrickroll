@@ -25,4 +25,4 @@ jobs:
 
     - name: Run bot
       run: |
-        python test.py
+        changer extension.py
