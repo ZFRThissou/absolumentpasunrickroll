@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageCard = document.createElement('div');
             imageCard.classList.add('video-card');
             imageCard.innerHTML = `
-                <img src="image/mèmes/images/${title}.png" alt="Video thumbnail">
+                <img src="image/mèmes/images/${title}.jpg" alt="Video thumbnail">
                 <div class="video-info">
                     <h3>${title}</h3>
                 </div>
@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 
 
