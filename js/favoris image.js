@@ -1,19 +1,14 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const favoriteButtons = document.querySelectorAll('.add-to-favorites');
 
     favoriteButtons.forEach(button => {
-        const imageCard = button.closest('.image-card');
-        const imageTitleElement = imageCard.querySelector('.image-info h3');
-        const imageTitle = imageTitleElement ? imageTitleElement.textContent.trim() : "";
-
+        const imageTitle = button.previousElementSibling.textContent;
         let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
         if (favorites.includes(imageTitle)) {
             button.textContent = 'Retirer des favoris';
-        } else {
-            button.textContent = 'Ajouter aux favoris';
         }
 
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function() {
             let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
             if (favorites.includes(imageTitle)) {
                 favorites = favorites.filter(fav => fav !== imageTitle);
