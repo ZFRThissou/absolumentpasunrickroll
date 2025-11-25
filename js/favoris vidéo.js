@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // récupère tous les boutons "Ajouter aux favoris"
     const favoriteButtons = document.querySelectorAll('.add-to-favorites');
 
     favoriteButtons.forEach(button => {
-        // remonte jusqu'à la carte vidéo, puis cherche le titre
         const videoCard = button.closest('.video-card');
         const videoTitleElement = videoCard.querySelector('.video-info h3');
         const videoTitle = videoTitleElement ? videoTitleElement.textContent.trim() : "";
@@ -31,3 +29,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
