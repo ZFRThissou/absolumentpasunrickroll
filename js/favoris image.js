@@ -2,15 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const favoriteButtons = document.querySelectorAll('.add-to-favorites');
 
     favoriteButtons.forEach(button => {
-        const videoCard = button.closest(.'video-card');
-        const imageTitleElement = video-card.quertySelector('.video-info h3');
-        const imageTitle = imageTilteElement ? imageTiltleElement.textContent.trim() : "";
-        
+        const imageTitle = button.previousElementSibling.textContent;
         let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
         if (favorites.includes(imageTitle)) {
             button.textContent = 'Retirer des favoris';
-        } else {
-            button.textContent = 'Ajouter aux favoris';
         }
 
         button.addEventListener('click', function() {
