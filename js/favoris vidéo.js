@@ -1,14 +1,21 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    // récupère tous les boutons "Ajouter aux favoris"
     const favoriteButtons = document.querySelectorAll('.add-to-favorites');
 
     favoriteButtons.forEach(button => {
-        const videoTitle = button.previousElementSibling.textContent;
+        // remonte jusqu'à la carte vidéo, puis cherche le titre
+        const videoCard = button.closest('.video-card');
+        const videoTitleElement = videoCard.querySelector('.video-info h3');
+        const videoTitle = videoTitleElement ? videoTitleElement.textContent.trim() : "";
+
         let favorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
         if (favorites.includes(videoTitle)) {
             button.textContent = 'Retirer des favoris';
+        } else {
+            button.textContent = 'Ajouter aux favoris';
         }
 
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             let favorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
             if (favorites.includes(videoTitle)) {
                 favorites = favorites.filter(fav => fav !== videoTitle);
@@ -24,4 +31,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
