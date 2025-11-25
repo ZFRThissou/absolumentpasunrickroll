@@ -1,7 +1,7 @@
 from PIL import Image
 import os
 
-folder = "../image/mèmes3/images"
+folder = "image/mèmes3/images"
 
 for file in os.listdir(folder):
     if file.lower().endswith((".jpg", ".jpeg")):
@@ -16,3 +16,4 @@ for file in os.listdir(folder):
 
         img.save(output_path, "PNG")
         print(f"Converti : {file} → {os.path.basename(output_path)}")
+
