@@ -3,27 +3,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     favoriteButtons.forEach(button => {
         const videoCard = button.closest('.video-card');
-        const titleElement = videoCard.quertySelector('h3');
+        const titleElement = videoCard.querySelector('h3');
         const imageTitle = titleElement.textContent.trim();
         let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
         if (favorites.includes(imageTitle)) {
             button.textContent = 'Retirer des favoris';
         } else {
-            button.textContent = 'Ajouter aux favoris' ;
+            button.textContent = 'Ajouter aux favoris';
+        }
 
-        button.addEventListener('click', function() {
+        button.addEventListener('click', () => {
             let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
             if (favorites.includes(imageTitle)) {
                 favorites = favorites.filter(fav => fav !== imageTitle);
-                localStorage.setItem('imageFavorites', JSON.stringify(favorites));
                 button.textContent = 'Ajouter aux favoris';
                 console.log(`${imageTitle} a été retiré des favoris!`);
             } else {
                 favorites.push(imageTitle);
-                localStorage.setItem('imageFavorites', JSON.stringify(favorites));
                 button.textContent = 'Retirer des favoris';
                 console.log(`${imageTitle} a été ajouté aux favoris!`);
             }
+            localStorage.setItem('imageFavorites', JSON.stringify(favorites));
         });
     });
 });
