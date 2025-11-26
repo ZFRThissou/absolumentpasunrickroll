@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let pageType;
     const path = window.location.pathname;
     
-    if (path.includes('vidéos.html')) {
+    if (path.includes('/vidéos')) {
         pageType = 'videos';
-    } else if (path.includes('audios.html')) {
+    } else if (path.includes('/audios')) {
         pageType = 'audios';
-    } else if (path.includes('images.html')) {
+    } else if (path.includes('/images')) {
         pageType = 'images';
     } else {
         return; // Quitter si ce n'est aucune des pages concernées
