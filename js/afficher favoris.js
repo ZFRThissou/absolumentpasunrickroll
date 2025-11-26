@@ -1,73 +1,161 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Les listes contiennent maintenant des objets : [{title: 'titre', ext: 'ext'}, ...]
+    // Récupération des favoris (avec les objets {title, ext} pour vidéo et image)
     const videoFavorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
-    const audioFavorites = JSON.parse(localStorage.getItem('audioFavorites')) || []; // Reste un tableau de titres simples
+    const audioFavorites = JSON.parse(localStorage.getItem('audioFavorites')) || [];
     const imageFavorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
-    const videoGrid = document.querySelector('.video-grid');
-
-    // Afficher les vidéos favorites
-    if (videoFavorites.length + audioFavorites.length + imageFavorites.length === 0) {
-        videoGrid.innerHTML = '<p>Aucun mème favorit enregistrée.</p>';
+    const videoGrid = document.querySelector('.video-grid') || document.createElement('div');
+    if (!document.querySelector('.video-grid')) {
+        videoGrid.classList.add('video-grid');
     }
-    
-    // Traitement des VIDÉOS (utilise titre et extension)
+    videoGrid.innerHTML = ''; // Nettoyer le contenu existant
+
+    if (videoFavorites.length + audioFavorites.length + imageFavorites.length === 0) {
+        videoGrid.innerHTML = '<p>Aucun mème favorit enregistré.</p>';
+    }
+
+    // --- Traitement des VIDÉOS ---
     if (videoFavorites.length > 0) {
-        videoFavorites.forEach(videoData => { // videoData est l'objet {title: '...', ext: '...'}
+        videoFavorites.forEach(videoData => {
+            const mediaPath = `image/mèmes/vidéos/${videoData.title}.${videoData.ext}`;
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
+            videoCard.setAttribute('data-title', videoData.title);
+            videoCard.setAttribute('data-type', 'video');
+            
             videoCard.innerHTML = `
                 <video controls>
-                    <source src="image/mèmes/vidéos/${videoData.title}.${videoData.ext}">
+                    <source src="${mediaPath}">
                 </video>
                 <div class="video-info">
                     <h3>${videoData.title}</h3>
+                    <div class="video-actions">
+                        <button class="remove-from-favorites" data-type="video" data-title="${videoData.title}">Retirer des favoris</button>
+                        <div class="download-share">
+                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
+                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${videoData.title}')">Partager</button>
+                        </div>
+                    </div>
                 </div>
             `;
             videoGrid.appendChild(videoCard);
         });
     }
 
-    // Traitement des AUDIOS (conserve l'ancien comportement)
+    // --- Traitement des AUDIOS ---
     if (audioFavorites.length > 0) {
-        audioFavorites.forEach(title => { // title est une simple chaîne de caractères
+        audioFavorites.forEach(title => {
+            const mediaPath = `image/mèmes/audios/${title}.mp3`; // Supposons .mp3
             const audioCard = document.createElement('div');
             audioCard.classList.add('video-card');
+            audioCard.setAttribute('data-title', title);
+            audioCard.setAttribute('data-type', 'audio');
+
             audioCard.innerHTML = `
-                <button class="button" data-sound="image/mèmes/audios/${title}.mp3">Play Sound</button>
+                <button class="button" data-sound="${mediaPath}">Play Sound</button>
                 <div class="video-info">
                     <h3>${title}</h3>
+                    <div class="video-actions">
+                        <button class="remove-from-favorites" data-type="audio" data-title="${title}">Retirer des favoris</button>
+                        <div class="download-share">
+                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
+                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
+                        </div>
+                    </div>
                 </div>
             `;
             videoGrid.appendChild(audioCard);
         });
     }
-    
-    // Traitement des IMAGES (utilise titre et extension)
+
+    // --- Traitement des IMAGES ---
     if (imageFavorites.length > 0) {
-        imageFavorites.forEach(imageData => { // imageData est l'objet {title: '...', ext: '...'}
+        imageFavorites.forEach(imageData => {
+            const mediaPath = `image/mèmes/images/${imageData.title}.${imageData.ext}`;
             const imageCard = document.createElement('div');
             imageCard.classList.add('video-card');
+            imageCard.setAttribute('data-title', imageData.title);
+            imageCard.setAttribute('data-type', 'image');
+
             imageCard.innerHTML = `
-                <img src="image/mèmes/images/${imageData.title}.${imageData.ext}" alt="Image thumbnail">
+                <img src="${mediaPath}" alt="Image thumbnail">
                 <div class="video-info">
                     <h3>${imageData.title}</h3>
+                    <div class="video-actions">
+                        <button class="remove-from-favorites" data-type="image" data-title="${imageData.title}">Retirer des favoris</button>
+                        <div class="download-share">
+                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
+                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${imageData.title}')">Partager</button>
+                        </div>
+                    </div>
                 </div>
             `;
             videoGrid.appendChild(imageCard);
         });
     }
 
-    // Ajouter la grille audio dans le contenu principal
-    document.querySelector('.main-content').appendChild(videoGrid);
+    // Ajouter la grille dans le contenu principal
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent && !document.querySelector('.main-content .video-grid')) {
+        mainContent.appendChild(videoGrid);
+    }
+    
+    // --- Logique d'interaction : Play Sound et Retirer des favoris ---
 
-    // Fonction pour jouer le son
+    // 1. Fonction pour jouer le son (Play Sound)
     document.querySelectorAll('.button').forEach(button => {
         button.addEventListener('click', function(event) {
             const soundFile = event.target.getAttribute('data-sound');
-            const audio = document.getElementById('audio');
+            let audio = document.getElementById('audio');
+            if (!audio) {
+                // Créer l'élément audio s'il n'existe pas (recommandé pour favoris.html)
+                audio = document.createElement('audio');
+                audio.id = 'audio';
+                document.body.appendChild(audio); 
+            }
             audio.src = soundFile;
             audio.currentTime = 0;
             audio.play();
+        });
+    });
+
+    // 2. Logique pour "Retirer des favoris"
+    document.querySelectorAll('.remove-from-favorites').forEach(button => {
+        button.addEventListener('click', function(event) {
+            const type = button.getAttribute('data-type');
+            const title = button.getAttribute('data-title');
+            const card = button.closest('.video-card');
+
+            let favoritesKey;
+            
+            if (type === 'video') {
+                favoritesKey = 'videoFavorites';
+            } else if (type === 'audio') {
+                favoritesKey = 'audioFavorites';
+            } else if (type === 'image') {
+                favoritesKey = 'imageFavorites';
+            }
+
+            let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+
+            if (type === 'audio') {
+                // Audio (string simple)
+                favorites = favorites.filter(favTitle => favTitle !== title);
+            } else {
+                // Vidéo et Image (objets {title, ext})
+                favorites = favorites.filter(favObj => favObj.title !== title);
+            }
+
+            localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+
+            // Retirer la carte du DOM
+            if (card) {
+                card.remove();
+            }
+
+            // Si la liste devient vide, afficher le message
+            if (document.querySelectorAll('.video-card').length === 0) {
+                 videoGrid.innerHTML = '<p>Aucun mème favorit enregistré.</p>';
+            }
         });
     });
 });
