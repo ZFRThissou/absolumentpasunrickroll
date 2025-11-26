@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname.toLowerCase();
 
     // Détermination du type de page avec la correction pour les URL propres (ex: /vidéos)    
-    if (path.includes('vidéos.html')) {
+    if (path.includes('/videos')) {
         pageType = 'videoFavorites'; 
         console.log(`vidéo`);
     } else if (path.includes('/audios')) {
