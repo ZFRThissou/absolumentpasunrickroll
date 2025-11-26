@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
         console.log(`vidéo`);
-    } else if (path.includes('/audios')) {
+    } else if (path.includes('dios')) {
         pageType = 'audioFavorites'; 
         console.log(`audio`);
     } else if (path.includes('/images')) {
