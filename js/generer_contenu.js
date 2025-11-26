@@ -2,104 +2,146 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoGrid = document.querySelector('.video-grid');
     if (!videoGrid) return; // Quitter si l'élément conteneur n'est pas trouvé
 
-    // 1. Déterminer le type de page actuel (vidéos, audios, images)
     let pageType;
     const path = window.location.pathname;
-    
+
+    // Détermination du type de page avec la correction pour les URL propres (ex: /vidéos)
     if (path.includes('/vidéos')) {
-        pageType = 'videos';
+        pageType = 'videoFavorites'; 
     } else if (path.includes('/audios')) {
-        pageType = 'audios';
+        pageType = 'audioFavorites'; 
     } else if (path.includes('/images')) {
-        pageType = 'images';
+        pageType = 'imageFavorites'; 
     } else {
-        return; // Quitter si ce n'est aucune des pages concernées
+        return;
     }
+    
+    // Fonction pour initialiser/mettre à jour le bouton de favoris
+    function updateFavoriteButton(button, mèmeData, favoritesKey) {
+        let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+        
+        let isFavorite;
+        if (favoritesKey === 'audioFavorites') {
+            // Audio (chaîne simple)
+            isFavorite = favorites.includes(mèmeData.title);
+        } else {
+            // Vidéo et Image (objets {title, ext})
+            isFavorite = favorites.some(fav => fav.title === mèmeData.title);
+        }
+
+        button.textContent = isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris';
+        button.onclick = function() {
+            toggleFavorite(button, mèmeData, favoritesKey);
+        };
+    }
+
+    // Fonction pour basculer l'état du favori
+    function toggleFavorite(button, mèmeData, favoritesKey) {
+        let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+        
+        let isFavorite;
+        if (favoritesKey === 'audioFavorites') {
+            isFavorite = favorites.includes(mèmeData.title);
+        } else {
+            isFavorite = favorites.some(fav => fav.title === mèmeData.title);
+        }
+
+        if (isFavorite) {
+            // Retirer
+            if (favoritesKey === 'audioFavorites') {
+                favorites = favorites.filter(favTitle => favTitle !== mèmeData.title);
+            } else {
+                favorites = favorites.filter(favObj => favObj.title !== mèmeData.title);
+            }
+            button.textContent = 'Ajouter aux favoris';
+            console.log(`${mèmeData.title} a été retiré des favoris!`);
+        } else {
+            // Ajouter
+            if (favoritesKey === 'audioFavorites') {
+                favorites.push(mèmeData.title); // Audio stocke juste le titre
+            } else {
+                favorites.push(mèmeData); // Vidéo/Image stocke l'objet {title, ext}
+            }
+            button.textContent = 'Retirer des favoris';
+            console.log(`${mèmeData.title} a été ajouté aux favoris!`);
+        }
+
+        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+    }
+
 
     // 2. Charger les données JSON
     fetch('data/mèmes.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            const mèmes = data[pageType];
+            const mèmeType = pageType.replace('Favorites', ''); // 'video', 'audio', 'image'
+            const mèmes = data[mèmeType + 's']; // 'videos', 'audios', 'images'
             
             mèmes.forEach(mème => {
                 const title = mème.title;
                 const ext = mème.ext;
                 
-                // Construire les chemins
                 let mediaPath;
                 let cardContent;
 
-                if (pageType === 'videos') {
+                if (mèmeType === 'video') {
                     mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                    cardContent = `
-                        <video controls>
-                            <source src="${mediaPath}">
-                        </video>
-                    `;
-                } else if (pageType === 'audios') {
+                    cardContent = `<video controls><source src="${mediaPath}"></video>`;
+                } else if (mèmeType === 'audio') {
                     mediaPath = `image/mèmes/audios/${title}.${ext}`;
-                    cardContent = `
-                        <button class="button" data-sound="${mediaPath}">Play Sound</button>
-                    `;
-                } else if (pageType === 'images') {
+                    cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
+                } else if (mèmeType === 'image') {
                     mediaPath = `image/mèmes/images/${title}.${ext}`;
-                    cardContent = `
-                        <img src="${mediaPath}" alt="Image thumbnail">
-                    `;
+                    cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
                 }
                 
-                // Générer le HTML complet de la carte
-                const cardHTML = `
-                    <div class="video-card" data-title="${title}" data-ext="${ext}">
-                        ${cardContent}
-                        <div class="video-info">
-                            <h3>${title}</h3>
-                            <div class="video-actions">
-                                <button class="add-to-favorites">Ajouter aux favoris</button>
-                                <div class="download-share">
-                                    <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                                    <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
-                                </div>
+                const cardHTML = document.createElement('div');
+                cardHTML.classList.add('video-card');
+                cardHTML.innerHTML = `
+                    ${cardContent}
+                    <div class="video-info">
+                        <h3>${title}</h3>
+                        <div class="video-actions">
+                            <button class="add-to-favorites"></button>
+                            <div class="download-share">
+                                <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
+                                <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
                             </div>
                         </div>
                     </div>
                 `;
                 
-                videoGrid.insertAdjacentHTML('beforeend', cardHTML);
+                videoGrid.appendChild(cardHTML);
+
+                // Initialiser l'état et l'événement du bouton de favoris
+                const favoriteButton = cardHTML.querySelector('.add-to-favorites');
+                updateFavoriteButton(favoriteButton, mème, pageType);
             });
 
-            // Une fois les cartes ajoutées, initialiser les fonctionnalités JS
-            // (Favoris, Play Sound pour Audios)
-            // Vous devrez appeler les fonctions d'initialisation de vos scripts ici.
-            // Par exemple:
-            // initFavoriteLogic(); // Une fonction que vous créez dans favoris_*.js pour réattacher les écouteurs
-            
-            // Pour l'instant, assurez-vous que vos scripts favoris et audios
-            // attachent leurs écouteurs d'événements à ces nouveaux boutons.
 
-            // Réattacher la logique 'Play Sound' si elle était dans un script externe:
-            document.querySelectorAll('.button').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    const soundFile = event.target.getAttribute('data-sound');
-                    // Assurez-vous que l'élément <audio id="audio"></audio> existe dans audios.html
-                    const audio = document.getElementById('audio');
-                    audio.src = soundFile;
-                    audio.currentTime = 0;
-                    audio.play();
+            // Initialiser la fonction Play Sound pour les audios
+            if (mèmeType === 'audio') {
+                document.querySelectorAll('.button').forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        const soundFile = event.target.getAttribute('data-sound');
+                        // L'élément audio doit exister dans audios.html
+                        const audio = document.getElementById('audio'); 
+                        if (audio) {
+                            audio.src = soundFile;
+                            audio.currentTime = 0;
+                            audio.play();
+                        }
+                    });
                 });
-            });
-
-            // Re-initialiser la logique des favoris après chargement (voir étape 4)
-            initializeFavoriteButtons(pageType);
+            }
         })
-        .catch(error => console.error('Erreur lors du chargement des mèmes:', error));
+        .catch(error => {
+            console.error('Erreur lors du chargement ou du traitement des mèmes:', error);
+            videoGrid.innerHTML = '<p>Désolé, impossible de charger le contenu. Vérifiez que le fichier mèmes.json est présent et que les URL sont correctes.</p>';
+        });
 });
-
-// Cette fonction sera définie dans un des scripts favoris et sera appelée ici.
-function initializeFavoriteButtons(pageType) {
-    // Le code pour initier les boutons favoris (Retirer/Ajouter) doit être réécrit
-    // pour fonctionner sur les boutons dynamiquement ajoutés.
-    
-    // Si vous souhaitez une aide pour adapter vos scripts favoris, dites-le-moi.
-}
