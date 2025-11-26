@@ -1,0 +1,35 @@
+{
+    "videos": [
+        {
+            "title": "on est vieux on est aigris on est obèses on sort pas",
+            "ext": "mp4"
+        },
+        {
+            "title": "tir raté basket",
+            "ext": "mp4"
+        }
+        // Ajoutez d'autres vidéos ici
+    ],
+    "audios": [
+        {
+            "title": "C'est un poisson steve",
+            "ext": "mp3"
+        },
+        {
+            "title": "oh la boulette",
+            "ext": "mp3"
+        }
+        // Ajoutez d'autres audios ici
+    ],
+    "images": [
+        {
+            "title": "tek critique le dégradé de no foot 2 rue",
+            "ext": "jpeg"
+        },
+        {
+            "title": "tu attaques ta propre race mon frère dragon ball",
+            "ext": "jpg"
+        }
+        // Ajoutez d'autres images ici
+    ]
+}
