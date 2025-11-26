@@ -8,7 +8,6 @@
             "title": "tir raté basket",
             "ext": "mp4"
         }
-        // Ajoutez d'autres vidéos ici
     ],
     "audios": [
         {
@@ -19,7 +18,6 @@
             "title": "oh la boulette",
             "ext": "mp3"
         }
-        // Ajoutez d'autres audios ici
     ],
     "images": [
         {
@@ -30,6 +28,5 @@
             "title": "tu attaques ta propre race mon frère dragon ball",
             "ext": "jpg"
         }
-        // Ajoutez d'autres images ici
     ]
 }
