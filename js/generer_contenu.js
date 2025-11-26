@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!videoGrid) return; // Quitter si l'élément conteneur n'est pas trouvé
 
     let pageType;
-    const path = window.location.pathname;
+    const path = window.location.pathname.toLowerCase();
 
     // Détermination du type de page avec la correction pour les URL propres (ex: /vidéos)
-    if (path.includes('/vidéos')) {
+    if (path.includes('videos') || path.includes('vidéos')) {
         pageType = 'videoFavorites'; 
     } else if (path.includes('/audios')) {
         pageType = 'audioFavorites'; 
