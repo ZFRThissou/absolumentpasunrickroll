@@ -8,15 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Détermination du type de page avec la correction pour les URL propres (ex: /vidéos)    
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
-        console.log(`vidéo`);
-    } else if (path.includes('dios')) {
+    } else if (path.includes('audios')) {
         pageType = 'audioFavorites'; 
-        console.log(`audio`);
     } else if (path.includes('/images')) {
         pageType = 'imageFavorites'; 
-        console.log(`image`);
     } else {
-        console.log(`rien`);
         return;
     }
     
