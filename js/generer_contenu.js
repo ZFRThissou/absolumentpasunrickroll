@@ -139,6 +139,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
             }
+            if (typeof initializeSearch === 'function') {
+                initializeSearch();
+            } else {
+                console.error("Le script recherche.js n'a pas chargé la fonction initializeSearch.");
+            }
         })
         .catch(error => {
             console.error('Erreur lors du chargement ou du traitement des mèmes:', error);
