@@ -1,1 +1,8 @@
-
+{
+  "name": "meme-site",
+  "version": "1.0.0",
+  "description": "Gestion des mèmes et des favoris",
+  "dependencies": {
+    "pg": "^8.11.3" 
+  }
+}
