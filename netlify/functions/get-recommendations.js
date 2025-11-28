@@ -4,7 +4,7 @@ const { Client } = require('pg');
 const handler = async () => {
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
+        ssl: { rejectUnauthorized: false } 
     });
 
     try {
