@@ -2,35 +2,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Déterminer la catégorie de mèmes basée sur l'URL de la page
     const pathname = window.location.pathname;
     let type;
-    let categoryKey; // Clé dans le JSON (videos, audios, images)
-    let folderName;  // Nom du dossier sur le serveur (vidéos, audios, images)
-    let localStorageKey; // Clé dans localStorage (videoFavorites, audioFavorites, etc.)
+    let categoryKey; // La clé principale utilisée pour accéder au JSON
+    let folderName; 
+    let localStorageKey; 
 
-    if (pathname.includes('vid')) {
-        console.log("vidéo")
+    // ATTENTION : Les noms de fichiers peuvent être sensibles à la casse sur certains serveurs
+    // Utilisez .includes() pour être flexible sur l'URL complète
+
+    if (pathname.includes('vidéos.html')) {
         type = 'video';
         categoryKey = 'videos';
         folderName = 'vidéos';
         localStorageKey = 'videoFavorites';
-    } else if (pathname.includes('audios')) {
-        console.log("audios")
+    } else if (pathname.includes('audios.html')) {
         type = 'audio';
-        categoryName = 'audios';
+        // ⭐️ CORRECTION ICI : categoryKey au lieu de categoryName
+        categoryKey = 'audios'; 
         folderName = 'audios';
         localStorageKey = 'audioFavorites';
-    } else if (pathname.includes('images')) {
-        console.log("image")
+    } else if (pathname.includes('images.html')) {
         type = 'image';
+        // ⭐️ CORRECTION ICI : Assurez-vous d'utiliser categoryKey
         categoryKey = 'images';
         folderName = 'images';
         localStorageKey = 'imageFavorites';
     } else {
-        // Page non reconnue (ex: page d'accueil ou autre)
+        // La page n'est pas une page de catégorie (ex: favoris.html, index.html)
+        // Aucune erreur si le script est chargé sur une autre page, car 'videoGrid' sera null.
         return; 
     }
-
+    
+    // Si la page est reconnue, on continue
     const videoGrid = document.querySelector('.video-grid');
-    if (!videoGrid) return;
+    if (!videoGrid) return; // Sécurité si l'élément n'existe pas
     
     // ----------------------------------------------------
     // FONCTIONS CÔTÉ SERVEUR (Netlify Function)
