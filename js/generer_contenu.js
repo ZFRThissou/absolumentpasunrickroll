@@ -9,18 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // ATTENTION : Les noms de fichiers peuvent être sensibles à la casse sur certains serveurs
     // Utilisez .includes() pour être flexible sur l'URL complète
 
-    if (pathname.includes('vidéos.html')) {
+    if (pathname.includes('vid')) {
         type = 'video';
         categoryKey = 'videos';
         folderName = 'vidéos';
         localStorageKey = 'videoFavorites';
-    } else if (pathname.includes('audios.html')) {
+    } else if (pathname.includes('audios')) {
         type = 'audio';
         // ⭐️ CORRECTION ICI : categoryKey au lieu de categoryName
         categoryKey = 'audios'; 
         folderName = 'audios';
         localStorageKey = 'audioFavorites';
-    } else if (pathname.includes('images.html')) {
+    } else if (pathname.includes('images')) {
         type = 'image';
         // ⭐️ CORRECTION ICI : Assurez-vous d'utiliser categoryKey
         categoryKey = 'images';
