@@ -6,17 +6,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let folderName;  // Nom du dossier sur le serveur (vidéos, audios, images)
     let localStorageKey; // Clé dans localStorage (videoFavorites, audioFavorites, etc.)
 
-    if (pathname.includes('vidéos.html')) {
+    if (pathname.includes('vid')) {
+        console.log("vidéo")
         type = 'video';
         categoryKey = 'videos';
         folderName = 'vidéos';
         localStorageKey = 'videoFavorites';
-    } else if (pathname.includes('audios.html')) {
+    } else if (pathname.includes('audios')) {
+        console.log("audios")
         type = 'audio';
         categoryName = 'audios';
         folderName = 'audios';
         localStorageKey = 'audioFavorites';
-    } else if (pathname.includes('images.html')) {
+    } else if (pathname.includes('images')) {
+        console.log("image")
         type = 'image';
         categoryKey = 'images';
         folderName = 'images';
