@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ----------------------------------------------------
     // LOGIQUE DE GÉNÉRATION DU CONTENU
     // ----------------------------------------------------
-    
+
     // Fonction pour générer le HTML de la carte
     function createMemeCard(meme, type, folderName, localStorageKey) {
         const title = meme.title;
@@ -156,16 +156,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Charger le JSON et générer les cartes
     fetch('data/mèmes.json')
-        .then(response => response.json())
-        .then(data => {
-            const memes = data[categoryKey] || [];
-            
-            memes.forEach(meme => {
-                const card = createMemeCard(meme, type, folderName, localStorageKey);
-                if (card) {
-                    videoGrid.appendChild(card);
-                }
-            });
+    .then(response => {
+        if (!response.ok) {
+            // Affiche l'erreur si le fichier JSON n'est pas trouvé (404) ou inaccessible
+            throw new Error(`Erreur HTTP: ${response.status} - Impossible de charger le fichier mèmes.json. Vérifiez le chemin.`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // ⭐️ DÉBOGAGE AJOUTÉ: Vérifiez si les données JSON sont bien chargées
+        if (!data || !data[categoryKey]) {
+            console.error(`Erreur de structure : La clé '${categoryKey}' est manquante ou vide dans le JSON.`);
+            videoGrid.innerHTML = '<p>Désolé, la structure des mèmes est incorrecte.</p>';
+            return;
+        }
+
+        const memes = data[categoryKey]; // Utilisez la clé détectée (videos, audios, images)
+        console.log(`✅ ${memes.length} mèmes de type '${categoryKey}' chargés.`); // Affiche le nombre de mèmes
+
+        memes.forEach(meme => {
+            // ... (Reste de votre code pour créer la carte) ...
+            const card = createMemeCard(meme, type, folderName, localStorageKey);
+            if (card) {
+                videoGrid.appendChild(card);
+            }
+        });
 
             // ----------------------------------------------------
             // INITIALISATION FINALE
@@ -192,10 +207,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         })
+        //.catch(error => {
+            //console.error('Erreur lors du chargement ou du traitement du fichier mèmes.json :', error);
+            //videoGrid.innerHTML = '<p>Désolé, impossible de charger les mèmes pour le moment.</p>';
+        //});
         .catch(error => {
-            console.error('Erreur lors du chargement ou du traitement du fichier mèmes.json :', error);
-            videoGrid.innerHTML = '<p>Désolé, impossible de charger les mèmes pour le moment.</p>';
-        });
+        console.error('❌ Erreur critique lors du chargement du contenu :', error);
+        // Affiche l'erreur pour l'utilisateur
+        videoGrid.innerHTML = `<p>Erreur critique : ${error.message}</p>`;
+    });
 });
 
 // NOTE : La fonction initializeSearch() doit être présente dans votre fichier js/recherche.js
