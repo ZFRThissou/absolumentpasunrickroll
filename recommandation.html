@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="image/logo/logo.png">
+    
+    <title>Absolumentpasunrickroll - Recommandations</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script> 
+    <script src="js/recommandations.js"></script>
+    
+    <script src="js/partager.js"></script> 
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QJVPT21ZK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3QJVPT21ZK');
+    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-543B77J');</script>
+</head>
+<body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-543B77J"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <div class="topbar">
+        <a href="index.html" style="text-decoration:none" class="logo">
+            <img src="image/logo/logo.png" alt="Logo">
+            <p>Absolumentpasunrickroll</p>
+        </a>
+        <a href="contacter.html" style="text-decoration:none" class="contact">
+            <img src="image/icones/contacter.png" alt="Contact Icon">
+            <p>Nous contacter</p>
+        </a>
+        </div>
+
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="index.html"><img src="image/icones/accueil.png" alt="Accueil Icon">Accueil</a>
+            </li>
+            <li>
+                <a href="vidéos.html"><img src="image/icones/vidéos.png" alt="Vidéos Icon">Vidéos</a>
+            </li>
+            <li>
+               <a href="audios.html"><img src="image/icones/audios.png" alt="Audios Icon">Audios</a>
+            </li>
+            <li>
+                <a href="images.html"><img src="image/icones/images.png" alt="Images Icon">Images</a>
+            </li>
+            <li class="active">
+                <a href="recommandation.html"><img src="image/icones/recommandation_cliquer.png" alt="Recommandation Icon">Recommandation</a>
+            </li>
+            <li>
+                <a href="favoris.html"><img src="image/icones/favoris.png" alt="Favoris Icon">Favoris</a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>🔥 Top Mèmes Recommandés par la Communauté</h2>
+        
+        <div class="video-grid" id="recommendations-grid">
+            <p>Chargement des mèmes les plus populaires...</p>
+        </div>
+    </div>
+    
+    <audio id="audio"></audio>
+
+</body>
+</html>
