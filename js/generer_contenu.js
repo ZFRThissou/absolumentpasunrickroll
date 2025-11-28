@@ -1,136 +1,185 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const videoGrid = document.querySelector('.video-grid');
-    if (!videoGrid) return; // Quitter si l'élément conteneur n'est pas trouvé
+    // Déterminer la catégorie de mèmes basée sur l'URL de la page
+    const pathname = window.location.pathname;
+    let type;
+    let categoryKey; // Clé dans le JSON (videos, audios, images)
+    let folderName;  // Nom du dossier sur le serveur (vidéos, audios, images)
+    let localStorageKey; // Clé dans localStorage (videoFavorites, audioFavorites, etc.)
 
-    let pageType;
-    const path = window.location.pathname.toLowerCase();
-
-    // Détermination du type de page avec la correction pour les URL propres (ex: /vidéos)    
-    if (path.includes('vid')) {
-        pageType = 'videoFavorites'; 
-    } else if (path.includes('audios')) {
-        pageType = 'audioFavorites'; 
-    } else if (path.includes('/images')) {
-        pageType = 'imageFavorites'; 
+    if (pathname.includes('vidéos.html')) {
+        type = 'video';
+        categoryKey = 'videos';
+        folderName = 'vidéos';
+        localStorageKey = 'videoFavorites';
+    } else if (pathname.includes('audios.html')) {
+        type = 'audio';
+        categoryName = 'audios';
+        folderName = 'audios';
+        localStorageKey = 'audioFavorites';
+    } else if (pathname.includes('images.html')) {
+        type = 'image';
+        categoryKey = 'images';
+        folderName = 'images';
+        localStorageKey = 'imageFavorites';
     } else {
-        return;
+        // Page non reconnue (ex: page d'accueil ou autre)
+        return; 
     }
+
+    const videoGrid = document.querySelector('.video-grid');
+    if (!videoGrid) return;
     
-    // Fonction pour initialiser/mettre à jour le bouton de favoris
-    function updateFavoriteButton(button, mèmeData, favoritesKey) {
-        let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
-        
-        let isFavorite;
-        if (favoritesKey === 'audioFavorites') {
-            // Audio (chaîne simple)
-            isFavorite = favorites.includes(mèmeData.title);
-        } else {
-            // Vidéo et Image (objets {title, ext})
-            isFavorite = favorites.some(fav => fav.title === mèmeData.title);
-        }
+    // ----------------------------------------------------
+    // FONCTIONS CÔTÉ SERVEUR (Netlify Function)
+    // ----------------------------------------------------
 
-        button.textContent = isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris';
-        button.onclick = function() {
-            toggleFavorite(button, mèmeData, favoritesKey);
-        };
-    }
-
-    // Fonction pour basculer l'état du favori
-    function toggleFavorite(button, mèmeData, favoritesKey) {
-        let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
-        
-        let isFavorite;
-        if (favoritesKey === 'audioFavorites') {
-            isFavorite = favorites.includes(mèmeData.title);
-        } else {
-            isFavorite = favorites.some(fav => fav.title === mèmeData.title);
-        }
-
-        if (isFavorite) {
-            // Retirer
-            if (favoritesKey === 'audioFavorites') {
-                favorites = favorites.filter(favTitle => favTitle !== mèmeData.title);
-            } else {
-                favorites = favorites.filter(favObj => favObj.title !== mèmeData.title);
-            }
-            button.textContent = 'Ajouter aux favoris';
-            console.log(`${mèmeData.title} a été retiré des favoris!`);
-        } else {
-            // Ajouter
-            if (favoritesKey === 'audioFavorites') {
-                favorites.push(mèmeData.title); // Audio stocke juste le titre
-            } else {
-                favorites.push(mèmeData); // Vidéo/Image stocke l'objet {title, ext}
-            }
-            button.textContent = 'Retirer des favoris';
-            console.log(`${mèmeData.title} a été ajouté aux favoris!`);
-        }
-
-        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
-    }
-
-
-    // 2. Charger les données JSON
-    fetch('data/mèmes.json')
+    /**
+     * Envoie une requête à la Netlify Function pour incrémenter ou décrémenter le score du mème.
+     * @param {string} title - Le titre du mème.
+     * @param {string} type - Le type du mème ('video', 'audio', 'image').
+     * @param {number} change - +1 (ajout aux favoris) ou -1 (retrait des favoris).
+     */
+    function updateServerScore(title, type, change) {
+        fetch('/.netlify/functions/update-score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title: title, change: change, type: type })
+        })
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
-            }
+            if (!response.ok) throw new Error('Erreur réseau ou serveur lors de l\'appel à la fonction Netlify.');
             return response.json();
         })
         .then(data => {
-            const mèmeType = pageType.replace('Favorites', ''); // 'video', 'audio', 'image'
-            const mèmes = data[mèmeType + 's']; // 'videos', 'audios', 'images'
+            // Log de confirmation (optionnel)
+            console.log(`Score de ${title} (${type}) mis à jour. Nouveau score: ${data.new_score}`);
+        })
+        .catch(error => {
+            console.error('Échec de la mise à jour du score (BDD) :', error);
+            // On peut ici informer l'utilisateur qu'il y a eu un problème serveur
+        });
+    }
+
+    /**
+     * Gère le clic sur le bouton 'Ajouter/Retirer des favoris'.
+     * @param {HTMLElement} button - Le bouton cliqué.
+     * @param {string} title - Le titre du mème.
+     * @param {string} type - Le type du mème ('video', 'audio', 'image').
+     * @param {string} localStorageKey - La clé de localStorage (ex: 'videoFavorites').
+     */
+    function toggleFavorite(button, title, type, localStorageKey) {
+        let favorites = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+        const isFavorite = favorites.includes(title);
+        
+        if (isFavorite) {
+            // Retirer des favoris
+            favorites = favorites.filter(fav => fav !== title);
+            button.textContent = 'Ajouter aux favoris';
             
-            mèmes.forEach(mème => {
-                const title = mème.title;
-                const ext = mème.ext;
-                
-                let mediaPath;
-                let cardContent;
+            // ⭐️ APPEL SERVEUR : Décrémenter (-1)
+            updateServerScore(title, type, -1);
+        } else {
+            // Ajouter aux favoris
+            favorites.push(title);
+            button.textContent = 'Retirer des favoris';
 
-                if (mèmeType === 'video') {
-                    mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                    cardContent = `<video controls><source src="${mediaPath}"></video>`;
-                } else if (mèmeType === 'audio') {
-                    mediaPath = `image/mèmes/audios/${title}.${ext}`;
-                    cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
-                } else if (mèmeType === 'image') {
-                    mediaPath = `image/mèmes/images/${title}.${ext}`;
-                    cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
-                }
-                
-                const cardHTML = document.createElement('div');
-                cardHTML.classList.add('video-card');
-                cardHTML.innerHTML = `
-                    ${cardContent}
-                    <div class="video-info">
-                        <h3>${title}</h3>
-                        <div class="video-actions">
-                            <button class="add-to-favorites"></button>
-                            <div class="download-share">
-                                <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                                <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
-                            </div>
-                        </div>
+            // ⭐️ APPEL SERVEUR : Incrémenter (+1)
+            updateServerScore(title, type, 1);
+        }
+
+        // Mise à jour du stockage local (pour l'affichage personnel des favoris)
+        localStorage.setItem(localStorageKey, JSON.stringify(favorites));
+    }
+
+
+    // ----------------------------------------------------
+    // LOGIQUE DE GÉNÉRATION DU CONTENU
+    // ----------------------------------------------------
+    
+    // Fonction pour générer le HTML de la carte
+    function createMemeCard(meme, type, folderName, localStorageKey) {
+        const title = meme.title;
+        const ext = meme.ext;
+        const mediaPath = `image/mèmes/${folderName}/${title}.${ext}`;
+        
+        let cardContent;
+
+        if (type === 'video') {
+            cardContent = `
+                <video controls>
+                    <source src="${mediaPath}" type="video/${ext}">
+                </video>
+            `;
+        } else if (type === 'audio') {
+            // L'élément <audio> est mis en bas du body dans audios.html
+            cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
+        } else if (type === 'image') {
+            cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
+        } else {
+            return null; // Ne rien générer si le type est inconnu
+        }
+        
+        // Vérifier si le mème est déjà en favori pour l'affichage initial du bouton
+        const favorites = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+        const buttonText = favorites.includes(title) ? 'Retirer des favoris' : 'Ajouter aux favoris';
+
+        const card = document.createElement('div');
+        card.classList.add('video-card');
+        card.innerHTML = `
+            ${cardContent}
+            <div class="video-info">
+                <h3>${title}</h3>
+                <div class="video-actions">
+                    <button class="add-to-favorites">${buttonText}</button>
+                    <div class="download-share">
+                        <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
+                        <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
                     </div>
-                `;
-                
-                videoGrid.appendChild(cardHTML);
+                </div>
+            </div>
+        `;
+        
+        // Gérer le clic sur le bouton Favoris
+        const favButton = card.querySelector('.add-to-favorites');
+        if (favButton) {
+            favButton.addEventListener('click', () => {
+                toggleFavorite(favButton, title, type, localStorageKey);
+            });
+        }
 
-                // Initialiser l'état et l'événement du bouton de favoris
-                const favoriteButton = cardHTML.querySelector('.add-to-favorites');
-                updateFavoriteButton(favoriteButton, mème, pageType);
+        return card;
+    }
+
+    // Charger le JSON et générer les cartes
+    fetch('data/mèmes.json')
+        .then(response => response.json())
+        .then(data => {
+            const memes = data[categoryKey] || [];
+            
+            memes.forEach(meme => {
+                const card = createMemeCard(meme, type, folderName, localStorageKey);
+                if (card) {
+                    videoGrid.appendChild(card);
+                }
             });
 
+            // ----------------------------------------------------
+            // INITIALISATION FINALE
+            // ----------------------------------------------------
+            
+            // 1. Initialiser la recherche (Fuse.js) après que toutes les cartes soient créées
+            if (typeof initializeSearch === 'function') {
+                initializeSearch();
+            }
 
-            // Initialiser la fonction Play Sound pour les audios
-            if (mèmeType === 'audio') {
+            // 2. Initialiser le 'Play Sound' si c'est la page Audio
+            if (type === 'audio') {
                 document.querySelectorAll('.button').forEach(button => {
                     button.addEventListener('click', function(event) {
+                        // Assurez-vous que l'élément <audio id="audio"></audio> est présent dans audios.html
                         const soundFile = event.target.getAttribute('data-sound');
-                        // L'élément audio doit exister dans audios.html
-                        const audio = document.getElementById('audio'); 
+                        const audio = document.getElementById('audio');
                         if (audio) {
                             audio.src = soundFile;
                             audio.currentTime = 0;
@@ -139,14 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
             }
-            if (typeof initializeSearch === 'function') {
-                initializeSearch();
-            } else {
-                console.error("Le script recherche.js n'a pas chargé la fonction initializeSearch.");
-            }
         })
         .catch(error => {
-            console.error('Erreur lors du chargement ou du traitement des mèmes:', error);
-            videoGrid.innerHTML = '<p>Désolé, impossible de charger le contenu. Vérifiez que le fichier mèmes.json est présent et que les URL sont correctes.</p>';
+            console.error('Erreur lors du chargement ou du traitement du fichier mèmes.json :', error);
+            videoGrid.innerHTML = '<p>Désolé, impossible de charger les mèmes pour le moment.</p>';
         });
 });
+
+// NOTE : La fonction initializeSearch() doit être présente dans votre fichier js/recherche.js
+//       (comme nous l'avons corrigé précédemment).
+// NOTE : La fonction shareVideo() doit être présente dans votre fichier js/partager.js.
