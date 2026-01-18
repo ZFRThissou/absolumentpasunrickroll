@@ -2,26 +2,39 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Test Netlify Functions</title>
+    <title>Mon Formulaire Netlify</title>
+    <style>
+        body { font-family: sans-serif; margin: 50px; }
+        .resultat { margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none; }
+    </style>
 </head>
 <body>
-    <h1>Ma page dynamique</h1>
-    <p id="message-serveur">Chargement du message...</p>
-    <p>Date reçue : <span id="date-serveur">...</span></p>
+    <h1>Test d'envoi de données</h1>
+    
+    <input type="text" id="prenomInput" placeholder="Tape ton prénom ici">
+    <button onclick="envoyerDonnees()">Envoyer au serveur</button>
+
+    <div id="zoneResultat" class="resultat">
+        <strong id="messageServeur"></strong>
+    </div>
 
     <script>
-        // Ce petit script va chercher les infos de ta fonction
-        fetch('/.netlify/functions/test-serveur')
-            .then(response => response.json())
-            .then(data => {
-                // On remplace le texte par ce que le serveur a envoyé
-                document.getElementById('message-serveur').innerText = data.message;
-                document.getElementById('date-serveur').innerText = data.date;
-            })
-            .catch(error => {
-                document.getElementById('message-serveur').innerText = "Erreur de connexion";
-                console.error('Erreur:', error);
-            });
+        function envoyerDonnees() {
+            const prenom = document.getElementById('prenomInput').value;
+            const zone = document.getElementById('zoneResultat');
+            const message = document.getElementById('messageServeur');
+
+            // On appelle notre fonction en lui passant le prénom
+            fetch('/.netlify/functions/test-serveur?nom=' + prenom)
+                .then(response => response.json())
+                .then(data => {
+                    message.innerText = data.message;
+                    zone.style.display = 'block'; // On affiche le carré gris
+                })
+                .catch(error => {
+                    alert("Erreur de communication avec le serveur");
+                });
+        }
     </script>
 </body>
 </html>
