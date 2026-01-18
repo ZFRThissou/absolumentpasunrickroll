@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Netlify Functions</title>
+</head>
+<body>
+    <h1>Ma page dynamique</h1>
+    <p id="message-serveur">Chargement du message...</p>
+    <p>Date reçue : <span id="date-serveur">...</span></p>
+
+    <script>
+        // Ce petit script va chercher les infos de ta fonction
+        fetch('/.netlify/functions/test-serveur')
+            .then(response => response.json())
+            .then(data => {
+                // On remplace le texte par ce que le serveur a envoyé
+                document.getElementById('message-serveur').innerText = data.message;
+                document.getElementById('date-serveur').innerText = data.date;
+            })
+            .catch(error => {
+                document.getElementById('message-serveur').innerText = "Erreur de connexion";
+                console.error('Erreur:', error);
+            });
+    </script>
+</body>
+</html>
