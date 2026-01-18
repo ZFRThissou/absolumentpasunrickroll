@@ -1,40 +1,31 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Mon Formulaire Netlify</title>
-    <style>
-        body { font-family: sans-serif; margin: 50px; }
-        .resultat { margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none; }
-    </style>
-</head>
-<body>
-    <h1>Test d'envoi de données</h1>
-    
-    <input type="text" id="prenomInput" placeholder="Tape ton prénom ici">
-    <button onclick="envoyerDonnees()">Envoyer au serveur</button>
+<script>
+    const zoneResultat = document.getElementById('zoneResultat');
+    const prenomInput = document.getElementById('prenomInput');
 
-    <div id="zoneResultat" class="resultat">
-        <strong id="messageServeur"></strong>
-    </div>
+    function envoyerDonnees() {
+        const prenom = prenomInput.value;
+        
+        // On appelle la fonction (avec ou sans prénom)
+        fetch('/.netlify/functions/test-serveur?nom=' + prenom)
+            .then(response => response.json())
+            .then(data => {
+                // On vide la zone de résultat et on crée une liste
+                zoneResultat.innerHTML = "<h3>Qui est déjà venu :</h3><ul id='liste'></ul>";
+                const liste = document.getElementById('liste');
 
-    <script>
-        function envoyerDonnees() {
-            const prenom = document.getElementById('prenomInput').value;
-            const zone = document.getElementById('zoneResultat');
-            const message = document.getElementById('messageServeur');
-
-            // On appelle notre fonction en lui passant le prénom
-            fetch('/.netlify/functions/test-serveur?nom=' + prenom)
-                .then(response => response.json())
-                .then(data => {
-                    message.innerText = data.message;
-                    zone.style.display = 'block'; // On affiche le carré gris
-                })
-                .catch(error => {
-                    alert("Erreur de communication avec le serveur");
+                // On ajoute chaque nom reçu dans la liste
+                data.visiteurs.forEach(v => {
+                    const li = document.createElement('li');
+                    li.innerText = v.nom;
+                    liste.appendChild(li);
                 });
-        }
-    </script>
-</body>
-</html>
+
+                zoneResultat.style.display = 'block';
+                prenomInput.value = ""; // On vide la case pour le prochain
+            })
+            .catch(error => alert("Erreur serveur"));
+    }
+
+    // Petit bonus : Charger la liste dès qu'on arrive sur la page
+    window.onload = envoyerDonnees;
+</script>
