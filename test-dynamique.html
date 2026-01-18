@@ -1,4 +1,24 @@
-<script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Formulaire Netlify</title>
+    <style>
+        body { font-family: sans-serif; margin: 50px; }
+        .resultat { margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none; }
+    </style>
+</head>
+<body>
+    <h1>Test d'envoi de données</h1>
+    
+    <input type="text" id="prenomInput" placeholder="Tape ton prénom ici">
+    <button onclick="envoyerDonnees()">Envoyer au serveur</button>
+
+    <div id="zoneResultat" class="resultat">
+        <strong id="messageServeur"></strong>
+    </div>
+
+    <script>
     const zoneResultat = document.getElementById('zoneResultat');
     const prenomInput = document.getElementById('prenomInput');
 
@@ -29,3 +49,5 @@
     // Petit bonus : Charger la liste dès qu'on arrive sur la page
     window.onload = envoyerDonnees;
 </script>
+</body>
+</html>
