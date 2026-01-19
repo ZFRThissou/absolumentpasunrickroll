@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Gestion des mèmes et des favoris",
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0"
+    "pg": "^8.11.3" 
   }
 }
