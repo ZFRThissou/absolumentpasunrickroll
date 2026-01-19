@@ -29,11 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="video-info">
                     <h3>${videoData.title}</h3>
                     <div class="video-actions">
-                        <button class="remove-from-favorites" data-type="video" data-title="${videoData.title}">Retirer des favoris</button>
-                        <div class="download-share">
-                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${videoData.title}')">Partager</button>
-                        </div>
+                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="video" data-title="${videoData.title}"></div>
+                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${videoData.title}')">
                     </div>
                 </div>
             `;
@@ -55,11 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="video-info">
                     <h3>${title}</h3>
                     <div class="video-actions">
-                        <button class="remove-from-favorites" data-type="audio" data-title="${title}">Retirer des favoris</button>
-                        <div class="download-share">
-                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
-                        </div>
+                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="audio" data-title="${title}"></div>
+                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
             `;
@@ -81,11 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="video-info">
                     <h3>${imageData.title}</h3>
                     <div class="video-actions">
-                        <button class="remove-from-favorites" data-type="image" data-title="${imageData.title}">Retirer des favoris</button>
-                        <div class="download-share">
-                            <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                            <button class="share-button" onclick="shareVideo('${mediaPath}', '${imageData.title}')">Partager</button>
-                        </div>
+                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="image" data-title="${imageData.title}"></div>
+                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${imageData.title}')">
                     </div>
                 </div>
             `;

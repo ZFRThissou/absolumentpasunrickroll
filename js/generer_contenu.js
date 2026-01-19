@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Vidéo et Image (objets {title, ext})
             isFavorite = favorites.some(fav => fav.title === mèmeData.title);
         }
-
-        button.textContent = isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris';
+        //<img src="image/icones/telechargements.png" alt="Download Icon">
+        button.innerHTML = `<img src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
         button.onclick = function() {
             toggleFavorite(button, mèmeData, favoritesKey);
         };
@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 favorites = favorites.filter(favObj => favObj.title !== mèmeData.title);
             }
-            button.textContent = 'Ajouter aux favoris';
+            //button.textContent = 'Ajouter aux favoris';
+            button.querySelector('img').src = 'image/icones/favoris.png';
             console.log(`${mèmeData.title} a été retiré des favoris!`);
         } else {
             // Ajouter
@@ -62,7 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 favorites.push(mèmeData); // Vidéo/Image stocke l'objet {title, ext}
             }
-            button.textContent = 'Retirer des favoris';
+            //button.textContent = 'Retirer des favoris';
+            button.querySelector('img').src = 'image/icones/favoris_cliquer.png';
             console.log(`${mèmeData.title} a été ajouté aux favoris!`);
         }
 
@@ -107,11 +109,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="video-info">
                         <h3>${title}</h3>
                         <div class="video-actions">
-                            <button class="add-to-favorites"></button>
-                            <div class="download-share">
-                                <a class="download-button" href="${mediaPath}" download="">Télécharger</a>
-                                <button class="share-button" onclick="shareVideo('${mediaPath}', '${title}')">Partager</button>
-                            </div>
+                            <div class="add-to-favorites"></div>
+                            <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                            <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                         </div>
                     </div>
                 `;
