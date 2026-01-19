@@ -101,6 +101,8 @@ body {
     justify-content: center;
 }
 
+
+
 .sidebar ul li img {
     width: 40px;
     display: block;
@@ -116,6 +118,17 @@ body {
     padding: 10px;
     font-size: 18px;
     color: black;
+    border-radius: 20%;
+    transition: background-color 0.3s ease;
+    width: 58.03px;
+}
+
+.sidebar ul li a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar ul li a:active {
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 
@@ -172,33 +185,16 @@ body {
     color: #7f8c8d;
 }
 
-
-
-
-/*.fav-btn {
-    background-color: transparent;
-    border: none;
-    font-size: 1.2em;
-    cursor: pointer;
-    color: #ffcc00;
-    margin-left: 10px;
-    outline: none;
-}
-
-.fav-btn.active {
-    color: #ff9900;
-}*/
-
-.add-to-favorites {
-    margin-top: 29px;
-}
-
 .video-actions {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 10px;
+    padding-top: 20px;
+}
+.video-actions img {
+    height: 40px;
+    width: 40px;
 }
 .download-share {
     display: flex;
@@ -207,39 +203,22 @@ body {
     gap: 8px;
     margin-top: 5px
 }
-.download-button, .share-button {
+.download-button, .partage-button, .add-to-favorites {
     background-color: transparent;
-    text-decoration: none;
-    border: none;
-    color: #000000;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0;
-    display: block;
-}
-
-#loader {
-    display: none;
-    text-align: center;
-    padding: 20px;
-}
-.loader-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #ccc;
-    border-top: 4px solid #000;
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: auto;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    cursor: pointer;
+    padding: 10px;
+    transition: background-color 0.3s ease;
 }
 
+.download-button:hover, .partage-button:hover, .add-to-favorites:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
 
-
+.download-button:active, .partage-button:active, .add-to-favorites:active {
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+}
 
 .button {
     width: 100%;
