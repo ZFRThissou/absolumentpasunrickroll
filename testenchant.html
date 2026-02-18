@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Enchantment Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Optimiseur d'Enchantements</h1>
+        <p>Calculez l'ordre de fusion idéal pour éviter le message "Trop cher !"</p>
+    </header>
+
+    <main>
+        <section id="input-area">
+            <h3>Ajouter des enchantements</h3>
+            <select id="enchantment-select">
+                <option value="sharpness">Tranchant (Sharpness)</option>
+                <option value="unbreaking">Solidité (Unbreaking)</option>
+                <option value="mending">Rapiéçage (Mending)</option>
+            </select>
+            <input type="number" id="level-input" min="1" max="5" value="1">
+            <button onclick="addEnchantment()">Ajouter</button>
+        </section>
+
+        <section id="list-area">
+            <h3>Livres à fusionner :</h3>
+            <ul id="enchantment-list"></ul>
+            <button class="optimize-btn" onclick="optimize()">Optimiser la fusion</button>
+        </section>
+
+        <section id="result-area">
+            <h3>Résultat optimal :</h3>
+            <div id="tree-display">
+                </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
