@@ -1,35 +1,39 @@
 const postgres = require('postgres');
-
 const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
 exports.handler = async (event) => {
-    // On récupère le titre du mème passé dans l'URL (?id=titre)
     const memeTitle = event.queryStringParameters.id;
+    const action = event.queryStringParameters.action; // "add" ou "remove"
 
-    if (!memeTitle) {
-        return { statusCode: 400, body: "Titre du mème manquant" };
-    }
+    if (!memeTitle) return { statusCode: 400, body: "Titre manquant" };
 
     try {
-        // ON CONFLICT permet de créer la ligne si le mème n'est pas encore dans la base
-        const result = await sql`
-            INSERT INTO stats_memes (id_meme, likes)
-            VALUES (${memeTitle}, 1)
-            ON CONFLICT (id_meme) 
-            DO UPDATE SET likes = stats_memes.likes + 1
-            RETURNING likes
-        `;
+        let result;
+        if (action === 'remove') {
+            // On décrémente mais on ne descend pas en dessous de 0
+            result = await sql`
+                UPDATE stats_memes 
+                SET likes = GREATEST(0, likes - 1) 
+                WHERE id_meme = ${memeTitle}
+                RETURNING likes
+            `;
+        } else {
+            // On incrémente (ton code actuel)
+            result = await sql`
+                INSERT INTO stats_memes (id_meme, likes)
+                VALUES (${memeTitle}, 1)
+                ON CONFLICT (id_meme) 
+                DO UPDATE SET likes = stats_memes.likes + 1
+                RETURNING likes
+            `;
+        }
 
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nouveauxLikes: result[0].likes }),
+            body: JSON.stringify({ nouveauxLikes: result[0]?.likes || 0 }),
         };
     } catch (error) {
-        console.error("Erreur like-meme:", error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message }),
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
 };
