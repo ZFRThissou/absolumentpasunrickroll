@@ -104,28 +104,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const cardHTML = document.createElement('div');
                 cardHTML.classList.add('video-card');
-                const safeTitle = mème.title.replace(/\s+/g, '-'); // ID propre pour le span des likes
-
                 cardHTML.innerHTML = `
                     ${cardContent}
                     <div class="video-info">
-                        <h3>${mème.title}</h3>
+                        <h3>${title}</h3>
                         <div class="video-actions">
-                            <button class="add-to-favorites action-button" onclick="gererLikeEtFavori('${mème.title}', '${pageType}', this)">
-                                <img src="image/icones/favoris.png" alt="Favoris Icon">
-                                <span id="likes-${safeTitle}" class="like-count">0</span>
-                            </button>
-                            <button class="partage-button action-button" onclick="shareVideo('${mediaPath}', '${mème.title}')">
-                                <img src="image/icones/partager.png" alt="Partager Icon">
-                            </button>
-                            <a href="${mediaPath}" download="${mème.title}.${mème.ext}" class="download-button action-button">
-                                <img src="image/icones/telechargements.png" alt="Download Icon">
-                            </a>
+                            <div class="add-to-favorites"></div>
+                            <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                            <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                         </div>
                     </div>
                 `;
                 
                 videoGrid.appendChild(cardHTML);
+
+                // Initialiser l'état et l'événement du bouton de favoris
+                const favoriteButton = cardHTML.querySelector('.add-to-favorites');
+                updateFavoriteButton(favoriteButton, mème, pageType);
             });
 
 
@@ -144,61 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
             }
-
-            // --- C'EST ICI QU'ON AJOUTE LE CHARGEMENT DES SCORES ---
-            fetch('/.netlify/functions/get-stats')
-                .then(res => res.json())
-                .then(stats => {
-                    stats.forEach(s => {
-                        const safeTitle = s.id_meme.replace(/\s+/g, '-');
-                        const span = document.getElementById(`likes-${safeTitle}`);
-                        if (span) span.innerText = s.likes;
-                    });
-                })
-                .catch(err => console.log("Pas encore de stats à charger"));
-
-            // --- ET ICI LA FONCTION COMBO ---
-            window.gererLikeEtFavori = async function(titre, favoritesKey, button) {
-                let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
-                const safeTitle = titre.replace(/\s+/g, '-');
-                const img = button.querySelector('img');
-                const span = document.getElementById(`likes-${safeTitle}`);
-
-                const isFavorite = (favoritesKey === 'audioFavorites') 
-                    ? favorites.includes(titre) 
-                    : favorites.some(f => f.title === titre);
-
-                let action = "";
-
-                if (!isFavorite) {
-                    // --- ON AJOUTE ---
-                    action = "add";
-                    if (favoritesKey === 'audioFavorites') favorites.push(titre);
-                    else favorites.push({title: titre, ext: 'mp4'}); 
-                    img.src = 'image/icones/favoris_cliquer.png';
-                } else {
-                    // --- ON ENLÈVE ---
-                    action = "remove";
-                    if (favoritesKey === 'audioFavorites') favorites = favorites.filter(t => t !== titre);
-                    else favorites = favorites.filter(f => f.title !== titre);
-                    img.src = 'image/icones/favoris.png';
-                }
-
-                // Mise à jour du localStorage
-                localStorage.setItem(favoritesKey, JSON.stringify(favorites));
-
-                // Appel Neon avec l'action (add ou remove)
-                try {
-                    const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(titre)}&action=${action}`);
-                    const data = await res.json();
-                    if (span && data.nouveauxLikes !== undefined) {
-                        span.innerText = data.nouveauxLikes;
-                    }
-                } catch(e) { 
-                    console.error("Erreur synchro base de données", e); 
-                }
-            };
-
             if (typeof initializeSearch === 'function') {
                 initializeSearch();
             } else {
