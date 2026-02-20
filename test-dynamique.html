@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Neon + Netlify</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
+        .container { max-width: 500px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input { width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 15px; background-color: #00d1b2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #00b89c; }
+        #zoneResultat { margin-top: 25px; padding-top: 15px; border-top: 2px solid #eee; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f9f9f9; margin-bottom: 5px; padding: 8px; border-radius: 4px; border-left: 4px solid #00d1b2; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Livre d'Or (Neon)</h1>
+    <p>Test d'écriture et lecture dans la base de données.</p>
+    
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="prenomInput" placeholder="Ton prénom...">
+        <button onclick="envoyerDonnees()">Envoyer</button>
+    </div>
+
+    <div id="zoneResultat">
+        <h3>Visiteurs récents :</h3>
+        <ul id="liste">
+            <li>Chargement...</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const listeUl = document.getElementById('liste');
+    const prenomInput = document.getElementById('prenomInput');
+
+    // Fonction pour charger et afficher la liste
+    function chargerListe(data) {
+        listeUl.innerHTML = ""; // On vide la liste actuelle
+        
+        if (data.visiteurs && data.visiteurs.length > 0) {
+            data.visiteurs.forEach(v => {
+                const li = document.createElement('li');
+                li.innerText = v.nom;
+                listeUl.appendChild(li);
+            });
+        } else {
+            listeUl.innerHTML = "<li>Personne pour l'instant...</li>";
+        }
+    }
+
+    function envoyerDonnees() {
+        const nom = prenomInput.value;
+        // On appelle la fonction (si nom est vide, elle fera juste une lecture)
+        fetch('/.netlify/functions/test-serveur?nom=' + encodeURIComponent(nom))
+            .then(res => res.json())
+            .then(data => {
+                chargerListe(data);
+                prenomInput.value = ""; // On vide le champ
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Erreur de connexion au serveur");
+            });
+    }
+
+    // Au chargement de la page, on récupère la liste direct
+    window.onload = () => {
+        fetch('/.netlify/functions/test-serveur')
+            .then(res => res.json())
+            .then(data => chargerListe(data));
+    };
+</script>
+
+</body>
+</html>
