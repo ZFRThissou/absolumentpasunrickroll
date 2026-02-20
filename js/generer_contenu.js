@@ -168,26 +168,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     ? favorites.includes(titre) 
                     : favorites.some(f => f.title === titre);
 
+                let action = "";
+
                 if (!isFavorite) {
-                    // Ajout
+                    // --- ON AJOUTE ---
+                    action = "add";
                     if (favoritesKey === 'audioFavorites') favorites.push(titre);
                     else favorites.push({title: titre, ext: 'mp4'}); 
                     img.src = 'image/icones/favoris_cliquer.png';
-
-                    // Envoi du Like à Neon
-                    try {
-                        const res = await fetch('/.netlify/functions/like-meme?id=' + encodeURIComponent(titre));
-                        const data = await res.json();
-                        if (span) span.innerText = data.nouveauxLikes;
-                    } catch(e) { console.error(e); }
                 } else {
-                    // Retrait
+                    // --- ON ENLÈVE ---
+                    action = "remove";
                     if (favoritesKey === 'audioFavorites') favorites = favorites.filter(t => t !== titre);
                     else favorites = favorites.filter(f => f.title !== titre);
                     img.src = 'image/icones/favoris.png';
                 }
+
+                // Mise à jour du localStorage
                 localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+
+                // Appel Neon avec l'action (add ou remove)
+                try {
+                    const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(titre)}&action=${action}`);
+                    const data = await res.json();
+                    if (span && data.nouveauxLikes !== undefined) {
+                        span.innerText = data.nouveauxLikes;
+                    }
+                } catch(e) { 
+                    console.error("Erreur synchro base de données", e); 
+                }
             };
+
             if (typeof initializeSearch === 'function') {
                 initializeSearch();
             } else {
