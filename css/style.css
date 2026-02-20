@@ -15,6 +15,8 @@ body {
     background-color: #ffffff;
     color: #000000;
     box-sizing: border-box;
+    z-index: 9999;
+    top: 0;
 }
 
 .logo {
@@ -30,28 +32,6 @@ body {
 
 .logo p {
     font-size: 1.2em;
-    white-space: nowrap;
-    color: #000000;
-}
-
-.contact {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    position: absolute;
-    right: 15px;
-    top: 7px;
-    height: 60px;
-    justify-content: center;
-}
-
-.contact img {
-    height: 40px;
-    margin-bottom: -20px;
-}
-
-.contact p {
-    font-size: 15px;
     white-space: nowrap;
     color: #000000;
 }
@@ -75,7 +55,7 @@ body {
 
 .sidebar {
     position: fixed;
-    top: 65px;
+    top: 60px;
     left: 0;
     width: 120px;
     height: calc(100vh - 65px);
@@ -83,6 +63,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    z-index: 9998;
 }
 
 .sidebar ul {
@@ -100,8 +81,6 @@ body {
     align-items: center;
     justify-content: center;
 }
-
-
 
 .sidebar ul li img {
     width: 40px;
@@ -163,6 +142,7 @@ body {
 .video-card video {
     width: 100%;
     display: block;
+    aspect-ratio: 16 / 9;
 }
 
 .video-card img {
@@ -244,6 +224,7 @@ body {
     margin: 20px;
 }
 
+/* Styles pour les boutons de la page d'accueil */
 .button-row {
     display: flex;
     justify-content: space-around;
