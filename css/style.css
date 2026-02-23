@@ -168,21 +168,29 @@ body {
 .video-actions {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: wrap;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 .video-actions img {
     height: 40px;
     width: 40px;
 }
-.download-share {
+
+.favorite-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    margin-top: 5px
+    align-items: center;
+    gap: 2px;
 }
+
+.like-count {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: -5px;
+}
+
 .download-button, .partage-button, .add-to-favorites {
     background-color: transparent;
     border-radius: 50%;
@@ -198,6 +206,10 @@ body {
 .download-button:active, .partage-button:active, .add-to-favorites:active {
     background-color: rgba(0, 0, 0, 0.2);
     transform: scale(0.95);
+}
+
+.add-to-favorites {
+    padding: 5px;
 }
 
 .button {
