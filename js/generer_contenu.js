@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isFavorite) {
             // Retirer
-            action = "remove";
+            action = 'remove';
             if (favoritesKey === 'audioFavorites') {
                 favorites = favorites.filter(favTitle => favTitle !== mèmeData.title);
             } else {
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`${mèmeData.title} a été retiré des favoris!`);
         } else {
             // Ajouter
-            action = "add";
+            action = 'add';
             if (favoritesKey === 'audioFavorites') {
                 favorites.push(mèmeData.title); // Audio stocke juste le titre
             } else {
