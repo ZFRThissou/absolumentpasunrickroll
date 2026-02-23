@@ -70,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`${mèmeData.title} a été ajouté aux favoris!`);
         }
         try {
-            const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(mèmeData)}&action=${action}`);
+            const safeTitle = mèmeData.replace(/\s+/g, '-');
+            console.log(safeTitle)
+            const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(safeTitle)}&action=${action}`);
             const data = await res.json();
             console.log('Réponse de la fonction serverless:', data);
         }
