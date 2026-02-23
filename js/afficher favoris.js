@@ -139,7 +139,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 favorites = favorites.filter(favObj => favObj.title !== title);
             }
 
-            console.log(favorites);
+            try {
+                const res = fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
+                const data = res.json();
+                console.log('Réponse de la fonction serverless:', data);
+            }
+            catch(e){
+                console.error('Erreur synchro base de données:', e);
+            }
 
             localStorage.setItem(favoritesKey, JSON.stringify(favorites));
 
@@ -155,5 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 
