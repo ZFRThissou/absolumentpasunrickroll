@@ -29,7 +29,10 @@ document.addEventListener('DOMContentLoaded',function() {
                 <div class="video-info">
                     <h3>${videoData.title}</h3>
                     <div class="video-actions">
-                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="video" data-title="${videoData.title}"></div>
+                        <div class="favorite-container">
+                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="video" data-title="${videoData.title}"></div>
+                            <span class="like-count" id="count-${videoData.title.replace(/\s+/g, '-')}"></span>
+                        </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
                         <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${videoData.title}')">
                     </div>
@@ -53,7 +56,10 @@ document.addEventListener('DOMContentLoaded',function() {
                 <div class="video-info">
                     <h3>${title}</h3>
                     <div class="video-actions">
-                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="audio" data-title="${title}"></div>
+                        <div class="favorite-container">
+                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="audio" data-title="${title}"></div>
+                            <span class="like-count" id="count-${title.replace(/\s+/g, '-')}"></span>
+                        </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
                         <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                     </div>
@@ -77,7 +83,10 @@ document.addEventListener('DOMContentLoaded',function() {
                 <div class="video-info">
                     <h3>${imageData.title}</h3>
                     <div class="video-actions">
-                        <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="image" data-title="${imageData.title}"></div>
+                        <div class="favorite-container">
+                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="image" data-title="${imageData.title}"></div>
+                            <span class="like-count" id="count-${imageData.title.replace(/\s+/g, '-')}"></span>
+                        </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
                         <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${imageData.title}')">
                     </div>
@@ -92,6 +101,17 @@ document.addEventListener('DOMContentLoaded',function() {
     if (mainContent && !document.querySelector('.main-content .video-grid')) {
         mainContent.appendChild(videoGrid);
     }
+
+    fetch('/.netlify/functions/get-all-likes')
+        .then(res => res.json())
+        .then(stats => {
+            stats.forEach(stat => {
+                const countSpan = document.getElementById(`count-${stat.id_meme.replace(/\s+/g, '-')}`);
+                if (countSpan) {
+                    countSpan.textContent = stat.likes;
+                }
+            });
+        });
     
     // --- Logique d'interaction : Play Sound et Retirer des favoris ---
 
@@ -162,6 +182,7 @@ document.addEventListener('DOMContentLoaded',function() {
         });
     });
 });
+
 
 
 
