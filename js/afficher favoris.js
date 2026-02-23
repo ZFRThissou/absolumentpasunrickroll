@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded',async function() {
+document.addEventListener('DOMContentLoaded',function() {
     // Récupération des favoris (avec les objets {title, ext} pour vidéo et image)
     const videoFavorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
     const audioFavorites = JSON.parse(localStorage.getItem('audioFavorites')) || [];
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded',async function() {
 
     // 2. Logique pour "Retirer des favoris"
     document.querySelectorAll('.remove-from-favorites').forEach(button => {
-        button.addEventListener('click', function(event) {
+        button.addEventListener('click', async function(event) {
             const type = button.getAttribute('data-type');
             const title = button.getAttribute('data-title');
             const card = button.closest('.video-card');
@@ -162,7 +162,6 @@ document.addEventListener('DOMContentLoaded',async function() {
         });
     });
 });
-
 
 
 
