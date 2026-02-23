@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`${mèmeData.title} a été ajouté aux favoris!`);
         }
         try {
-            const safeTitle = mèmeData.replace(/\s+/g, '-');
+            const safeTitle = mèmeData
             console.log(safeTitle)
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(safeTitle)}&action=${action}`);
             const data = await res.json();
