@@ -73,10 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const safeTitle = mèmeData.title;
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(safeTitle)}&action=${action}`);
             const data = await res.json();
-            if (data && typeof data.likes !== 'undefined') {
+            if (data && typeof data.nouveauxLikes !== 'undefined') {
                 const countSpan = document.getElementById(`count-${safeTitle.replace(/\s+/g, '-')}`);
                 if (countSpan) {
-                    countSpan.textContent = data.likes;
+                    countSpan.textContent = data.nouveauxLikes;
                 }
             }
         }
