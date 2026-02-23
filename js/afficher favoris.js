@@ -121,10 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let favoritesKey;
             
-            console.log(type);
-            console.log(title);
-            console.log(card);
-            
             if (type === 'video') {
                 favoritesKey = 'videoFavorites';
             } else if (type === 'audio') {
@@ -143,6 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 favorites = favorites.filter(favObj => favObj.title !== title);
             }
 
+            console.log(favorites);
+
             localStorage.setItem(favoritesKey, JSON.stringify(favorites));
 
             // Retirer la carte du DOM
@@ -157,4 +155,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
