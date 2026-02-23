@@ -141,6 +141,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateFavoriteButton(favoriteButton, mème, pageType);
             });
 
+            fetch('/.netlify/functions/get-all-likes')
+                .then(res => res.json())
+                .then(stats => {
+                    stats.forEach(stat => {
+                        const countSpan = document.getElementById(`count-${stat.id_meme.replace(/\s+/g, '-')}`);
+                        if (countSpan) {
+                            countSpan.textContent = stat.likes;
+                        }
+                    });
+                });
+
 
             // Initialiser la fonction Play Sound pour les audios
             if (mèmeType === 'audio') {
