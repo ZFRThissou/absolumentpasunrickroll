@@ -71,10 +71,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         try {
             const safeTitle = mèmeData.title;
-            console.log(safeTitle);
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(safeTitle)}&action=${action}`);
             const data = await res.json();
-            console.log('Réponse de la fonction serverless:', data);
+            if (data && typeof data.likes !== 'undefined') {
+                const countSpan = document.getElementById(`count-${safeTitle.replace(/\s+/g, '-')}`);
+                if (countSpan) {
+                    countSpan.textContent = data.likes;
+                }
+            }
         }
         catch(e){
             console.error('Erreur synchro base de données:', e);
@@ -120,7 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="video-info">
                         <h3>${title}</h3>
                         <div class="video-actions">
-                            <div class="add-to-favorites"></div>
+                            <div class="favorite-container">
+                                <div class="add-to-favorites"></div>
+                                <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">0</span>
+                            </div>
                             <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
                             <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                         </div>
