@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fonction pour basculer l'état du favori
-    function toggleFavorite(button, mèmeData, favoritesKey) {
+    async function toggleFavorite(button, mèmeData, favoritesKey) {
         let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
-        
+        let action = "";
         let isFavorite;
         if (favoritesKey === 'audioFavorites') {
             isFavorite = favorites.includes(mèmeData.title);
@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isFavorite) {
             // Retirer
+            action = "remove";
             if (favoritesKey === 'audioFavorites') {
                 favorites = favorites.filter(favTitle => favTitle !== mèmeData.title);
             } else {
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`${mèmeData.title} a été retiré des favoris!`);
         } else {
             // Ajouter
+            action = "add";
             if (favoritesKey === 'audioFavorites') {
                 favorites.push(mèmeData.title); // Audio stocke juste le titre
             } else {
@@ -67,7 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
             button.querySelector('img').src = 'image/icones/favoris_cliquer.png';
             console.log(`${mèmeData.title} a été ajouté aux favoris!`);
         }
-
+        try {
+            const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(mèmeData)}&action=${action}`);
+            const data = await res.json();
+            console.log('Réponse de la fonction serverless:', data);
+        }
+        catch(e){
+            console.error('Erreur synchro base de données:', e);
+        }
         localStorage.setItem(favoritesKey, JSON.stringify(favorites));
     }
 
