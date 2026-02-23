@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded',async function() {
     // Récupération des favoris (avec les objets {title, ext} pour vidéo et image)
     const videoFavorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
     const audioFavorites = JSON.parse(localStorage.getItem('audioFavorites')) || [];
@@ -140,8 +140,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
-                const res = fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
-                const data = res.json();
+                const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
+                const data = await res.json();
                 console.log('Réponse de la fonction serverless:', data);
             }
             catch(e){
@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 
 
