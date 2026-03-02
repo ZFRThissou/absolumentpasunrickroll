@@ -127,10 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="add-to-favorites"></div>
                                 <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">0</span>
                             </div>
-                            <div class="download-share">
-                                <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                                <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
-                            </div>
+                            <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                            <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                         </div>
                     </div>
                 `;
