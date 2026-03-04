@@ -65,7 +65,7 @@ body {
     font-weight: bold;
     cursor: pointer;
     color: #606060;
-    border-radius: 2px;
+    border-radius: 20px;
 }
 
 #sort-button:hover {
