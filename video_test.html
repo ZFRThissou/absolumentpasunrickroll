@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="image/logo/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+    <script src="js/recherche.js"></script>
+    <script src="js/generer_contenu.js"></script>
+    <script src="js/partager.js"></script>
+    <title>Absolumentpasunrickroll</title>    
+    <!-- Analytics -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QJVPT21ZK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3QJVPT21ZK');
+    </script>
+    <!-- End Google Analytics -->
+    <!-- Google Adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7071777313496372"
+        crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-7071777313496372">
+    <!-- End Google Adsense -->
+</head>
+<body>
+    <div class="topbar">
+        <a href="/" style="text-decoration:none" class="logo">
+            <img src="image/logo/logo.png" alt="Logo">
+            <p>Absolumentpasunrickroll</p>
+        </a>
+        <span class="search-bar">
+            <input type="text" id="search-bar" placeholder="Rechercher des vidéos...">
+        </span>
+      <div class="sort-container">
+        <button id="sort-button">Trier par</button>
+        <div id="sort-menu" class="sort-menu">
+            <div class="sort-option" data-sort="name-asc">Nom (A-Z)</div>
+            <div class="sort-option" data-sort="name-desc">Nom (Z-A)</div>
+            <div class="sort-option" data-sort="likes-desc">Plus aimés</div>
+            <div class="sort-option" data-sort="likes-asc">Moins aimés</div>
+            <div class="sort-option" data-sort="date-desc">Plus récents</div>
+            <div class="sort-option" data-sort="date-asc">Plus anciens</div>
+            <div class="sort-option" data-sort="duration-desc">Plus longs</div>
+            <div class="sort-option" data-sort="duration-asc">Plus courts</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="/"><img src="image/icones/accueil.png" alt="Accueil Icon">Accueil</a>
+            </li>
+            <li>
+                <a href="/vidéos"><img src="image/icones/vidéos_cliquer.png" alt="Vidéos Icon">Vidéos</a>
+            </li>
+            <li>
+               <a href="/audios"><img src="image/icones/audios.png" alt="Audios Icon">Audios</a>
+            </li>
+            <li>
+                <a href="/images"><img src="image/icones/images.png" alt="Images Icon">Images</a>
+            </li>
+            <li>
+                <a href="/favoris"><img src="image/icones/favoris.png" alt="Favoris Icon">Favoris</a>
+            </li>
+            <li>
+                <a href="/contacter"><img src="image/icones/contacter.png" alt="Contact Icon">Nous contacter</a>
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="video-grid">
+        </div>
+    </div>
+</body>
+</html>
