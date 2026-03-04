@@ -36,6 +36,19 @@
         <span class="search-bar">
             <input type="text" id="search-bar" placeholder="Rechercher des vidéos...">
         </span>
+        <div class="sort-container">
+            <button id="sort-button">Trier par</button>
+            <div id="sort-menu" class="sort-menu">
+                <div class="sort-option" data-sort="name-asc">Nom (A-Z)</div>
+                <div class="sort-option" data-sort="name-desc">Nom (Z-A)</div>
+                <div class="sort-option" data-sort="likes-desc">Plus aimés</div>
+                <div class="sort-option" data-sort="likes-asc">Moins aimés</div>
+                <div class="sort-option" data-sort="date-desc">Plus récents</div>
+                <div class="sort-option" data-sort="date-asc">Plus anciens</div>
+                <div class="sort-option" data-sort="duration-desc">Plus longs</div>
+                <div class="sort-option" data-sort="duration-asc">Plus courts</div>
+            </div>
+        </div>
     </div>
     <div class="sidebar">
         <ul>
@@ -65,7 +78,3 @@
     </div>
 </body>
 </html>
-
-
-
-
