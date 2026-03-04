@@ -17,6 +17,7 @@ body {
     box-sizing: border-box;
     z-index: 9999;
     top: 0;
+    justify-content: space-between;
 }
 
 .logo {
