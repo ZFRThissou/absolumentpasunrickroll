@@ -38,7 +38,6 @@ body {
 }
 
 .search-bar {
-    padding-left: 122px;
     padding-top: 10px;
     width: 547px;
 }
@@ -53,9 +52,9 @@ body {
 
 .sort-container {
     position: relative;
-    margin-bottom: 15px;
     display: flex;
     justify-content: flex-start;
+    margin-right: 50px;
 }
 
 #sort-button {
