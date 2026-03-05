@@ -145,40 +145,45 @@ document.addEventListener('DOMContentLoaded', function() {
         let isFavorite = (favoritesKey === 'audioFavorites') 
             ? favorites.includes(mèmeData.title) 
             : favorites.some(fav => fav.title === mèmeData.title);
-
+    
         let action = isFavorite ? 'remove' : 'add';
-
+    
+        // 1. Mise à jour immédiate du LocalStorage pour l'état visuel
         if (isFavorite) {
             favorites = (favoritesKey === 'audioFavorites') 
                 ? favorites.filter(t => t !== mèmeData.title) 
                 : favorites.filter(f => f.title !== mèmeData.title);
-            button.querySelector('img').src = 'image/icones/favoris.png';
         } else {
             favorites.push(favoritesKey === 'audioFavorites' ? mèmeData.title : mèmeData);
-            button.querySelector('img').src = 'image/icones/favoris_cliquer.png';
         }
-
+        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+    
+        // 2. Appel à la base de données
         try {
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(mèmeData.title)}&action=${action}`);
             const data = await res.json();
             
-            // Mise à jour de la valeur dans notre tableau local de données
             const memeInList = currentMemesData.find(m => m.title === mèmeData.title);
             if (memeInList && data.nouveauxLikes !== undefined) {
                 memeInList.likes = data.nouveauxLikes;
                 
-                // CONDITION SPÉCIALE : Si on trie par likes, on ré-exécute le tri
+                // 3. Si on est en mode tri par likes, on reconstruit la grille
+                // Maintenant que le localStorage est à jour, renderGrid affichera le bon coeur
                 if (currentSortType === 'likes-desc' || currentSortType === 'likes-asc') {
                     sortMemes(currentSortType);
                 } else {
-                    // Sinon, on met juste à jour le chiffre visuellement sans bouger la carte
+                    // Si pas de tri, on change juste le chiffre sans tout reconstruire
                     const countSpan = document.getElementById(`count-${mèmeData.title.replace(/\s+/g, '-')}`);
                     if (countSpan) countSpan.textContent = data.nouveauxLikes;
+                    
+                    // On change aussi l'image manuellement pour éviter l'inversion sans re-render
+                    const img = button.querySelector('img');
+                    img.src = !isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png';
                 }
             }
-        } catch(e) { console.error('Erreur DB:', e); }
-
-        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+        } catch(e) { 
+            console.error('Erreur DB:', e); 
+        }
     }
 
     function initAudioButtons() {
