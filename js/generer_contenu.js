@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let pageType;
     const path = window.location.pathname.toLowerCase();
-    let currentMemesData = []; // Stockage local des données fusionnées
-    let databaseStats = {};    // Stockage des stats de la DB
+    let currentMemesData = []; 
+    let databaseStats = {};    
+    let currentSortType = ''; // Stocke le tri actuel (ex: 'likes-desc')
 
-    // Détermination du type de page
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
     } else if (path.includes('audios')) {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // 1. Charger les données JSON et les statistiques de la DB
+    // 1. Chargement initial
     Promise.all([
         fetch('data/mèmes.json').then(res => res.json()),
         fetch('/.netlify/functions/get-all-likes').then(res => res.json())
@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const mèmeType = pageType.replace('Favorites', ''); 
         const mèmes = jsonData[mèmeType + 's'];
 
-        // Indexation des stats par titre
-        stats.forEach(s => { databaseStats[s.id_meme] = s; });
+        stats.forEach(s => { 
+            databaseStats[s.id_meme] = s; 
+        });
 
-        // Fusion des données locales et DB pour le tri
         currentMemesData = mèmes.map(m => ({
             ...m,
             likes: databaseStats[m.title]?.likes || 0,
@@ -42,11 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
         initSortEvents();
     })
     .catch(error => {
-        console.error('Erreur lors du chargement:', error);
-        videoGrid.innerHTML = '<p>Erreur de chargement des données.</p>';
+        console.error('Erreur:', error);
+        videoGrid.innerHTML = '<p>Erreur de chargement.</p>';
     });
 
-    // 2. Fonction d'affichage de la grille
+    // 2. Affichage de la grille
     function renderGrid(dataList) {
         videoGrid.innerHTML = ''; 
         const mèmeType = pageType.replace('Favorites', '');
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof initializeSearch === 'function') initializeSearch();
     }
 
-    // 3. Logique de tri
+    // 3. Système de Tri amélioré
     function initSortEvents() {
         const btn = document.getElementById('sort-button');
         const menu = document.getElementById('sort-menu');
@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.sort-option').forEach(opt => {
             opt.onclick = function() {
-                const sortType = this.getAttribute('data-sort');
-                sortMemes(sortType);
+                currentSortType = this.getAttribute('data-sort');
+                sortMemes(currentSortType);
                 menu.classList.remove('active');
             };
         });
@@ -116,22 +116,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function sortMemes(type) {
-        let sorted = [...currentMemesData];
         switch(type) {
-            case 'name-asc': sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
-            case 'name-desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
-            case 'likes-desc': sorted.sort((a,b) => b.likes - a.likes); break;
-            case 'likes-asc': sorted.sort((a,b) => a.likes - b.likes); break;
-            case 'date-desc': sorted.sort((a,b) => b.date - a.date); break;
-            case 'date-asc': sorted.sort((a,b) => a.date - b.date); break;
-            case 'duration-desc': sorted.sort((a,b) => b.duree - a.duree); break;
-            case 'duration-asc': sorted.sort((a,b) => a.duree - b.duree); break;
+            case 'name-asc': currentMemesData.sort((a,b) => a.title.localeCompare(b.title)); break;
+            case 'name-desc': currentMemesData.sort((a,b) => b.title.localeCompare(a.title)); break;
+            case 'likes-desc': currentMemesData.sort((a,b) => b.likes - a.likes); break;
+            case 'likes-asc': currentMemesData.sort((a,b) => a.likes - b.likes); break;
+            case 'date-desc': currentMemesData.sort((a,b) => b.date - a.date); break;
+            case 'date-asc': currentMemesData.sort((a,b) => a.date - b.date); break;
+            case 'duration-desc': currentMemesData.sort((a,b) => b.duree - a.duree); break;
+            case 'duration-asc': currentMemesData.sort((a,b) => a.duree - b.duree); break;
         }
-        renderGrid(sorted);
+        renderGrid(currentMemesData);
     }
 
-    // --- Fonctions utilitaires existantes (Favoris, Audio, etc.) ---
-
+    // 4. Gestion des favoris avec actualisation du classement
     function updateFavoriteButton(button, mèmeData, favoritesKey) {
         let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
         let isFavorite = (favoritesKey === 'audioFavorites') 
@@ -163,14 +161,22 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(mèmeData.title)}&action=${action}`);
             const data = await res.json();
-            const countSpan = document.getElementById(`count-${mèmeData.title.replace(/\s+/g, '-')}`);
-            if (countSpan && data.nouveauxLikes !== undefined) {
-                countSpan.textContent = data.nouveauxLikes;
-                // Mettre à jour l'objet local pour que le tri reste cohérent
-                const memeObj = currentMemesData.find(m => m.title === mèmeData.title);
-                if (memeObj) memeObj.likes = data.nouveauxLikes;
+            
+            // Mise à jour de la valeur dans notre tableau local de données
+            const memeInList = currentMemesData.find(m => m.title === mèmeData.title);
+            if (memeInList && data.nouveauxLikes !== undefined) {
+                memeInList.likes = data.nouveauxLikes;
+                
+                // CONDITION SPÉCIALE : Si on trie par likes, on ré-exécute le tri
+                if (currentSortType === 'likes-desc' || currentSortType === 'likes-asc') {
+                    sortMemes(currentSortType);
+                } else {
+                    // Sinon, on met juste à jour le chiffre visuellement sans bouger la carte
+                    const countSpan = document.getElementById(`count-${mèmeData.title.replace(/\s+/g, '-')}`);
+                    if (countSpan) countSpan.textContent = data.nouveauxLikes;
+                }
             }
-        } catch(e) { console.error('Erreur synchro DB:', e); }
+        } catch(e) { console.error('Erreur DB:', e); }
 
         localStorage.setItem(favoritesKey, JSON.stringify(favorites));
     }
@@ -188,3 +194,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+        
