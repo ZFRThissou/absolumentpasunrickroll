@@ -1,188 +1,169 @@
-document.addEventListener('DOMContentLoaded',function() {
-    // Récupération des favoris (avec les objets {title, ext} pour vidéo et image)
-    const videoFavorites = JSON.parse(localStorage.getItem('videoFavorites')) || [];
-    const audioFavorites = JSON.parse(localStorage.getItem('audioFavorites')) || [];
-    const imageFavorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
-    const videoGrid = document.querySelector('.video-grid') || document.createElement('div');
-    if (!document.querySelector('.video-grid')) {
-        videoGrid.classList.add('video-grid');
+document.addEventListener('DOMContentLoaded', function() {
+    const videoGrid = document.querySelector('.video-grid') || document.querySelector('.main-content');
+    let currentMemesData = []; // Stockage local des favoris pour le tri
+    let currentSortType = '';
+
+    // 1. Initialisation : Récupérer et centraliser tous les favoris
+    function loadFavorites() {
+        const videoFavs = JSON.parse(localStorage.getItem('videoFavorites')) || [];
+        const audioFavs = JSON.parse(localStorage.getItem('audioFavorites')) || [];
+        const imageFavs = JSON.parse(localStorage.getItem('imageFavorites')) || [];
+
+        // On normalise les données pour avoir un format commun (objet avec title, ext, type)
+        const allFavs = [
+            ...videoFavs.map(v => ({ ...v, type: 'video' })),
+            ...audioFavs.map(title => ({ title: title, ext: 'mp3', type: 'audio' })), // On assume .mp3 pour l'audio
+            ...imageFavs.map(i => ({ ...i, type: 'image' }))
+        ];
+
+        // Récupération des likes en temps réel pour permettre le tri par popularité
+        fetch('/.netlify/functions/get-all-likes')
+            .then(res => res.json())
+            .then(stats => {
+                const statsMap = {};
+                stats.forEach(s => statsMap[s.id_meme] = s);
+
+                // On enrichit nos favoris avec les stats de la DB
+                currentMemesData = allFavs.map(m => ({
+                    ...m,
+                    likes: statsMap[m.title]?.likes || 0,
+                    date: statsMap[m.title]?.date_ajout ? new Date(statsMap[m.title].date_ajout) : new Date(0)
+                }));
+
+                renderGrid(currentMemesData);
+                initSortEvents();
+            })
+            .catch(err => {
+                console.error("Erreur chargement stats:", err);
+                // Si la DB échoue, on affiche quand même les favoris sans les likes
+                currentMemesData = allFavs.map(m => ({ ...m, likes: 0 }));
+                renderGrid(currentMemesData);
+            });
     }
-    videoGrid.innerHTML = ''; // Nettoyer le contenu existant
 
-    if (videoFavorites.length + audioFavorites.length + imageFavorites.length === 0) {
-        videoGrid.innerHTML = '<p>Aucun mème favorit enregistré.</p>';
-    }
+    // 2. Fonction d'affichage (inspirée de generer_contenu.js)
+    function renderGrid(dataList) {
+        if (!videoGrid) return;
+        videoGrid.innerHTML = '';
 
-    // --- Traitement des VIDÉOS ---
-    if (videoFavorites.length > 0) {
-        videoFavorites.forEach(videoData => {
-            const mediaPath = `image/mèmes/vidéos/${videoData.title}.${videoData.ext}`;
-            const videoCard = document.createElement('div');
-            videoCard.classList.add('video-card');
-            videoCard.setAttribute('data-title', videoData.title);
-            videoCard.setAttribute('data-type', 'video');
-            
-            videoCard.innerHTML = `
-                <video controls>
-                    <source src="${mediaPath}">
-                </video>
-                <div class="video-info">
-                    <h3>${videoData.title}</h3>
-                    <div class="video-actions">
-                        <div class="favorite-container">
-                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="video" data-title="${videoData.title}"></div>
-                            <span class="like-count" id="count-${videoData.title.replace(/\s+/g, '-')}"></span>
-                        </div>
-                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${videoData.title}')">
-                    </div>
-                </div>
-            `;
-            videoGrid.appendChild(videoCard);
-        });
-    }
+        if (dataList.length === 0) {
+            videoGrid.innerHTML = '<p>Aucun mème favori enregistré.</p>';
+            return;
+        }
 
-    // --- Traitement des AUDIOS ---
-    if (audioFavorites.length > 0) {
-        audioFavorites.forEach(title => {
-            const mediaPath = `image/mèmes/audios/${title}.mp3`; // Supposons .mp3
-            const audioCard = document.createElement('div');
-            audioCard.classList.add('video-card');
-            audioCard.setAttribute('data-title', title);
-            audioCard.setAttribute('data-type', 'audio');
+        dataList.forEach(mème => {
+            const title = mème.title;
+            const ext = mème.ext;
+            let mediaPath, cardContent;
 
-            audioCard.innerHTML = `
-                <button class="button" data-sound="${mediaPath}">Play Sound</button>
+            // Définition du chemin et du contenu selon le type
+            if (mème.type === 'video') {
+                mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
+                cardContent = `<video controls><source src="${mediaPath}"></video>`;
+            } else if (mème.type === 'audio') {
+                mediaPath = `image/mèmes/audios/${title}.${ext}`;
+                cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
+            } else if (mème.type === 'image') {
+                mediaPath = `image/mèmes/images/${title}.${ext}`;
+                cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
+            }
+
+            const card = document.createElement('div');
+            card.classList.add('video-card');
+            card.innerHTML = `
+                ${cardContent}
                 <div class="video-info">
                     <h3>${title}</h3>
                     <div class="video-actions">
                         <div class="favorite-container">
-                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="audio" data-title="${title}"></div>
-                            <span class="like-count" id="count-${title.replace(/\s+/g, '-')}"></span>
+                            <div class="add-to-favorites">
+                                <img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" 
+                                     data-type="${mème.type}" data-title="${title}">
+                            </div>
+                            <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
-                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
+                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png"></a>
+                        <img class="partage-button" src="image/icones/partager.png" onclick="shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
             `;
-            videoGrid.appendChild(audioCard);
+            videoGrid.appendChild(card);
+        });
+
+        attachInteractions();
+    }
+
+    // 3. Système de tri (Identique à generer_contenu.js)
+    function initSortEvents() {
+        const btn = document.getElementById('sort-button');
+        const menu = document.getElementById('sort-menu');
+        if (!btn || !menu) return;
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        document.querySelectorAll('.sort-option').forEach(opt => {
+            opt.onclick = function() {
+                currentSortType = this.getAttribute('data-sort');
+                sortMemes(currentSortType);
+                menu.classList.remove('active');
+            };
         });
     }
 
-    // --- Traitement des IMAGES ---
-    if (imageFavorites.length > 0) {
-        imageFavorites.forEach(imageData => {
-            const mediaPath = `image/mèmes/images/${imageData.title}.${imageData.ext}`;
-            const imageCard = document.createElement('div');
-            imageCard.classList.add('video-card');
-            imageCard.setAttribute('data-title', imageData.title);
-            imageCard.setAttribute('data-type', 'image');
-
-            imageCard.innerHTML = `
-                <img src="${mediaPath}" alt="Image thumbnail">
-                <div class="video-info">
-                    <h3>${imageData.title}</h3>
-                    <div class="video-actions">
-                        <div class="favorite-container">
-                            <div class="add-to-favorites"><img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" alt="Favoris Icon" data-type="image" data-title="${imageData.title}"></div>
-                            <span class="like-count" id="count-${imageData.title.replace(/\s+/g, '-')}"></span>
-                        </div>
-                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${imageData.title}')">
-                    </div>
-                </div>
-            `;
-            videoGrid.appendChild(imageCard);
-        });
+    function sortMemes(type) {
+        switch(type) {
+            case 'name-asc': currentMemesData.sort((a,b) => a.title.localeCompare(b.title)); break;
+            case 'name-desc': currentMemesData.sort((a,b) => b.title.localeCompare(a.title)); break;
+            case 'likes-desc': currentMemesData.sort((a,b) => b.likes - a.likes); break;
+            case 'likes-asc': currentMemesData.sort((a,b) => a.likes - b.likes); break;
+        }
+        renderGrid(currentMemesData);
     }
 
-    // Ajouter la grille dans le contenu principal
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent && !document.querySelector('.main-content .video-grid')) {
-        mainContent.appendChild(videoGrid);
-    }
-
-    fetch('/.netlify/functions/get-all-likes')
-        .then(res => res.json())
-        .then(stats => {
-            stats.forEach(stat => {
-                const countSpan = document.getElementById(`count-${stat.id_meme.replace(/\s+/g, '-')}`);
-                if (countSpan) {
-                    countSpan.textContent = stat.likes;
-                }
-            });
-        });
-    
-    // --- Logique d'interaction : Play Sound et Retirer des favoris ---
-
-    // 1. Fonction pour jouer le son (Play Sound)
-    document.querySelectorAll('.button').forEach(button => {
-        button.addEventListener('click', function(event) {
-            const soundFile = event.target.getAttribute('data-sound');
-            let audio = document.getElementById('audio');
-            if (!audio) {
-                // Créer l'élément audio s'il n'existe pas (recommandé pour favoris.html)
-                audio = document.createElement('audio');
+    // 4. Gestion des clics (Play et Suppression)
+    function attachInteractions() {
+        // Play Sound
+        document.querySelectorAll('.button').forEach(btn => {
+            btn.onclick = (e) => {
+                let audio = document.getElementById('audio') || document.createElement('audio');
                 audio.id = 'audio';
-                document.body.appendChild(audio); 
-            }
-            audio.src = soundFile;
-            audio.currentTime = 0;
-            audio.play();
+                if (!audio.parentElement) document.body.appendChild(audio);
+                audio.src = e.target.getAttribute('data-sound');
+                audio.currentTime = 0;
+                audio.play();
+            };
         });
-    });
 
-    // 2. Logique pour "Retirer des favoris"
-    document.querySelectorAll('.remove-from-favorites').forEach(button => {
-        button.addEventListener('click', async function(event) {
-            const type = button.getAttribute('data-type');
-            const title = button.getAttribute('data-title');
-            const card = button.closest('.video-card');
+        // Retirer des favoris
+        document.querySelectorAll('.remove-from-favorites').forEach(btn => {
+            btn.onclick = async function() {
+                const title = this.getAttribute('data-title');
+                const type = this.getAttribute('data-type');
+                const favoritesKey = type + 'Favorites';
 
-            let favoritesKey;
-            
-            if (type === 'video') {
-                favoritesKey = 'videoFavorites';
-            } else if (type === 'audio') {
-                favoritesKey = 'audioFavorites';
-            } else if (type === 'image') {
-                favoritesKey = 'imageFavorites';
-            }
+                // Mise à jour LocalStorage
+                let favs = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+                if (type === 'audio') {
+                    favs = favs.filter(t => t !== title);
+                } else {
+                    favs = favs.filter(f => f.title !== title);
+                }
+                localStorage.setItem(favoritesKey, JSON.stringify(favs));
 
-            let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+                // Mise à jour de la base de données (décrémenter le like)
+                try {
+                    await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
+                } catch(e) { console.error("Erreur DB", e); }
 
-            if (type === 'audio') {
-                // Audio (string simple)
-                favorites = favorites.filter(favTitle => favTitle !== title);
-            } else {
-                // Vidéo et Image (objets {title, ext})
-                favorites = favorites.filter(favObj => favObj.title !== title);
-            }
-
-            try {
-                const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
-                const data = await res.json();
-                console.log('Réponse de la fonction serverless:', data);
-            }
-            catch(e){
-                console.error('Erreur synchro base de données:', e);
-            }
-
-            localStorage.setItem(favoritesKey, JSON.stringify(favorites));
-
-            // Retirer la carte du DOM
-            if (card) {
-                card.remove();
-            }
-
-            // Si la liste devient vide, afficher le message
-            if (document.querySelectorAll('.video-card').length === 0) {
-                 videoGrid.innerHTML = '<p>Aucun mème favorit enregistré.</p>';
-            }
+                // Mise à jour de l'affichage local
+                currentMemesData = currentMemesData.filter(m => m.title !== title);
+                renderGrid(currentMemesData);
+            };
         });
-    });
+    }
+
+    loadFavorites();
 });
-
-
-
-
