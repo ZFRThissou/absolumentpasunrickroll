@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="image/logo/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+    <script src="js/recherche.js"></script>
+    <script src="js/generer_contenu.js"></script>
+    <script src="js/partager.js"></script>
     <title>Absolumentpasunrickroll</title>
     
     <!-- Analytics -->
@@ -24,6 +28,22 @@
             <img src="image/logo/logo.png" alt="Logo">
             <p>Absolumentpasunrickroll</p>
         </a>
+        <span class="search-bar">
+            <input type="text" id="search-bar" placeholder="Rechercher des vidéos...">
+        </span>
+        <div class="sort-container">
+            <button id="sort-button">Trier par</button>
+            <div id="sort-menu" class="sort-menu">
+                <div class="sort-option" data-sort="name-asc">Nom (A-Z)</div>
+                <div class="sort-option" data-sort="name-desc">Nom (Z-A)</div>
+                <div class="sort-option" data-sort="likes-desc">Plus aimés</div>
+                <div class="sort-option" data-sort="likes-asc">Moins aimés</div>
+                <div class="sort-option" data-sort="date-desc">Plus récents</div>
+                <div class="sort-option" data-sort="date-asc">Plus anciens</div>
+                <div class="sort-option" data-sort="duration-desc">Plus longs</div>
+                <div class="sort-option" data-sort="duration-asc">Plus courts</div>
+            </div>
+        </div>
     </div>
     <div class="sidebar">
         <ul>
@@ -48,38 +68,8 @@
         </ul>
     </div>
     <div class="main-content">
-        <div class="button-row">
-            <button class="equal-button" id="Audios" onclick="window.location.href='/audios'">Audios</button>
-            <button class="equal-button" id="Vidéos" onclick="window.location.href='/vidéos'">Vidéos</button>
-        </div>
-        <div class="button-row">
-            <button class="equal-button" id="Images" onclick="window.location.href='/images'">Images</button>
+        <div class="video-grid">
         </div>
     </div>
-    <style>
-        .main-content {
-            margin-left: 120px;
-            margin-right: 50px;
-            margin-top: 65px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            box-sizing: border-box;
-            justify-content: center;
-        }
-    </style>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
