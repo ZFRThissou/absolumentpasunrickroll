@@ -6,39 +6,60 @@ document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname.toLowerCase();
     let currentMemesData = []; 
     let databaseStats = {};    
-    let currentSortType = ''; // Stocke le tri actuel (ex: 'likes-desc')
+    let currentSortType = ''; 
 
+    // Détection de la page : Ajout de la condition pour l'index
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
     } else if (path.includes('audios')) {
         pageType = 'audioFavorites'; 
     } else if (path.includes('/images')) {
         pageType = 'imageFavorites'; 
+    } else if (path === '/' || path.includes('index.html')) {
+        pageType = 'index'; // Mode "Tout afficher"
     } else {
         return;
     }
 
-    // 1. Chargement initial
     Promise.all([
         fetch('data/mèmes.json').then(res => res.json()),
         fetch('/.netlify/functions/get-all-likes').then(res => res.json())
     ])
     .then(([jsonData, stats]) => {
-        const mèmeType = pageType.replace('Favorites', ''); 
-        const mèmes = jsonData[mèmeType + 's'];
+        let mèmesRaw = [];
+
+        // Logique de récupération des données selon la page
+        if (pageType === 'index') {
+            // On fusionne tout en ajoutant une propriété type pour le chemin du fichier
+            Object.keys(jsonData).forEach(key => {
+                const type = key.replace('s', ''); // videos -> video
+                const itemsWithType = jsonData[key].map(item => ({ ...item, typeMeme: type }));
+                mèmesRaw = mèmesRaw.concat(itemsWithType);
+            });
+        } else {
+            const mèmeType = pageType.replace('Favorites', ''); 
+            mèmesRaw = jsonData[mèmeType + 's'].map(item => ({ ...item, typeMeme: mèmeType }));
+        }
 
         stats.forEach(s => { 
             databaseStats[s.id_meme] = s; 
         });
 
-        currentMemesData = mèmes.map(m => ({
+        currentMemesData = mèmesRaw.map(m => ({
             ...m,
             likes: databaseStats[m.title]?.likes || 0,
             duree: databaseStats[m.title]?.duree || 0,
             date: databaseStats[m.title]?.date_ajout ? new Date(databaseStats[m.title].date_ajout) : new Date(0)
         }));
 
-        renderGrid(currentMemesData);
+        // Tri par défaut : Likes descendants si on est sur l'index
+        if (pageType === 'index') {
+            currentSortType = 'likes-desc';
+            sortMemes('likes-desc');
+        } else {
+            renderGrid(currentMemesData);
+        }
+        
         initSortEvents();
     })
     .catch(error => {
@@ -46,23 +67,23 @@ document.addEventListener('DOMContentLoaded', function() {
         videoGrid.innerHTML = '<p>Erreur de chargement.</p>';
     });
 
-    // 2. Affichage de la grille
     function renderGrid(dataList) {
         videoGrid.innerHTML = ''; 
-        const mèmeType = pageType.replace('Favorites', '');
 
         dataList.forEach(mème => {
             const title = mème.title;
             const ext = mème.ext;
+            const type = mème.typeMeme; // Utilise le type stocké lors du chargement
             let mediaPath, cardContent;
 
-            if (mèmeType === 'video') {
+            // Détermination du chemin et du contenu selon le type de mème
+            if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
                 cardContent = `<video controls><source src="${mediaPath}"></video>`;
-            } else if (mèmeType === 'audio') {
+            } else if (type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
                 cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
-            } else if (mèmeType === 'image') {
+            } else if (type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
                 cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
             }
@@ -86,14 +107,18 @@ document.addEventListener('DOMContentLoaded', function() {
             videoGrid.appendChild(cardHTML);
 
             const favoriteButton = cardHTML.querySelector('.add-to-favorites');
-            updateFavoriteButton(favoriteButton, mème, pageType);
+            // Pour l'index, on utilise par défaut 'videoFavorites' ou on peut adapter la logique de stockage
+            const favKey = (pageType === 'index') ? `${type}Favorites` : pageType;
+            updateFavoriteButton(favoriteButton, mème, favKey);
         });
 
-        if (mèmeType === 'audio') initAudioButtons();
+        // Initialisation des audios si au moins un audio est présent dans la liste
+        if (dataList.some(m => m.typeMeme === 'audio')) initAudioButtons();
         if (typeof initializeSearch === 'function') initializeSearch();
     }
 
-    // 3. Système de Tri amélioré
+    // ... (Le reste des fonctions sortMemes, initSortEvents, etc., reste identique)
+    
     function initSortEvents() {
         const btn = document.getElementById('sort-button');
         const menu = document.getElementById('sort-menu');
@@ -129,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGrid(currentMemesData);
     }
 
-    // 4. Gestion des favoris avec actualisation du classement
     function updateFavoriteButton(button, mèmeData, favoritesKey) {
         let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
         let isFavorite = (favoritesKey === 'audioFavorites') 
@@ -148,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
         let action = isFavorite ? 'remove' : 'add';
     
-        // 1. Mise à jour immédiate du LocalStorage pour l'état visuel
         if (isFavorite) {
             favorites = (favoritesKey === 'audioFavorites') 
                 ? favorites.filter(t => t !== mèmeData.title) 
@@ -158,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         localStorage.setItem(favoritesKey, JSON.stringify(favorites));
     
-        // 2. Appel à la base de données
         try {
             const res = await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(mèmeData.title)}&action=${action}`);
             const data = await res.json();
@@ -167,16 +189,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (memeInList && data.nouveauxLikes !== undefined) {
                 memeInList.likes = data.nouveauxLikes;
                 
-                // 3. Si on est en mode tri par likes, on reconstruit la grille
-                // Maintenant que le localStorage est à jour, renderGrid affichera le bon coeur
-                if (currentSortType === 'likes-desc' || currentSortType === 'likes-asc') {
+                if (currentSortType.includes('likes')) {
                     sortMemes(currentSortType);
                 } else {
-                    // Si pas de tri, on change juste le chiffre sans tout reconstruire
                     const countSpan = document.getElementById(`count-${mèmeData.title.replace(/\s+/g, '-')}`);
                     if (countSpan) countSpan.textContent = data.nouveauxLikes;
-                    
-                    // On change aussi l'image manuellement pour éviter l'inversion sans re-render
                     const img = button.querySelector('img');
                     img.src = !isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png';
                 }
@@ -199,4 +216,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-        
