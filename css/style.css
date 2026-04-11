@@ -284,36 +284,30 @@ body {
     margin: 20px;
 }
 
-/* Styles pour les boutons de la page d'accueil */
-.button-row {
+/* Conteneur pour centrer le loader dans la grille */
+.loader-container {
+    grid-column: 1 / -1; /* Prend toute la largeur de la grille */
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    color: #fff; /* À adapter selon ton thème */
 }
 
-.equal-button {
-    flex: 1;
-    font-size: 45px;
-    cursor: pointer;
-    text-align: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    aspect-ratio: 16 / 9;
-    color: white;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    max-width: 418px;
-    min-width: 209px;
+/* Le cercle qui tourne */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-top: 5px solid #ffcc00; /* Ta couleur principale */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
 }
 
-#Vidéos {
-    background-image: url(../image/logo/Vidéos.png);
-}
-
-#Audios {
-    background-image: url(../image/icones/audios.png);
-}
-
-#Images {
-    background-image: url(../image/logo/Images.png);
+/* L'animation de rotation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
