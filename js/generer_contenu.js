@@ -2,13 +2,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoGrid = document.querySelector('.video-grid');
     if (!videoGrid) return;
 
+    // --- AJOUT : Affichage du loader au démarrage ---
+    const loader = document.createElement('div');
+    loader.className = 'loader-container';
+    loader.innerHTML = `
+        <div class="spinner"></div>
+        <p style="color: white; margin-top: 10px;">Chargement des mèmes...</p>
+    `;
+    videoGrid.appendChild(loader);
+
     let pageType;
     const path = window.location.pathname.toLowerCase();
     let currentMemesData = []; 
     let databaseStats = {};    
     let currentSortType = ''; 
 
-    // Détection de la page : Ajout de la condition pour l'index
+    // Détection de la page
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
     } else if (path.includes('audios')) {
@@ -16,11 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (path.includes('/images')) {
         pageType = 'imageFavorites'; 
     } else if (path === '/' || path.includes('index.html')) {
-        pageType = 'index'; // Mode "Tout afficher"
+        pageType = 'index'; 
     } else {
         return;
     }
 
+    // Récupération des données (JSON local + Stats DB)
     Promise.all([
         fetch('data/mèmes.json').then(res => res.json()),
         fetch('/.netlify/functions/get-all-likes').then(res => res.json())
@@ -30,9 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Logique de récupération des données selon la page
         if (pageType === 'index') {
-            // On fusionne tout en ajoutant une propriété type pour le chemin du fichier
             Object.keys(jsonData).forEach(key => {
-                const type = key.replace('s', ''); // videos -> video
+                const type = key.replace('s', ''); 
                 const itemsWithType = jsonData[key].map(item => ({ ...item, typeMeme: type }));
                 mèmesRaw = mèmesRaw.concat(itemsWithType);
             });
@@ -52,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             date: databaseStats[m.title]?.date_ajout ? new Date(databaseStats[m.title].date_ajout) : new Date(0)
         }));
 
-        // Tri par défaut : Likes descendants si on est sur l'index
+        // Le loader est supprimé à l'intérieur de renderGrid via .innerHTML = ''
         if (pageType === 'index') {
             currentSortType = 'likes-desc';
             sortMemes('likes-desc');
@@ -64,19 +73,24 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        videoGrid.innerHTML = '<p>Erreur de chargement.</p>';
+        videoGrid.innerHTML = '<p style="color: white;">Erreur de chargement des données.</p>';
     });
 
     function renderGrid(dataList) {
+        // Nettoie la grille (supprime le loader)
         videoGrid.innerHTML = ''; 
+
+        if (dataList.length === 0) {
+            videoGrid.innerHTML = '<p style="color: white;">Aucun mème trouvé.</p>';
+            return;
+        }
 
         dataList.forEach(mème => {
             const title = mème.title;
             const ext = mème.ext;
-            const type = mème.typeMeme; // Utilise le type stocké lors du chargement
+            const type = mème.typeMeme;
             let mediaPath, cardContent;
 
-            // Détermination du chemin et du contenu selon le type de mème
             if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
                 cardContent = `<video controls><source src="${mediaPath}"></video>`;
@@ -107,18 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
             videoGrid.appendChild(cardHTML);
 
             const favoriteButton = cardHTML.querySelector('.add-to-favorites');
-            // Pour l'index, on utilise par défaut 'videoFavorites' ou on peut adapter la logique de stockage
             const favKey = (pageType === 'index') ? `${type}Favorites` : pageType;
             updateFavoriteButton(favoriteButton, mème, favKey);
         });
 
-        // Initialisation des audios si au moins un audio est présent dans la liste
         if (dataList.some(m => m.typeMeme === 'audio')) initAudioButtons();
         if (typeof initializeSearch === 'function') initializeSearch();
     }
 
-    // ... (Le reste des fonctions sortMemes, initSortEvents, etc., reste identique)
-    
     function initSortEvents() {
         const btn = document.getElementById('sort-button');
         const menu = document.getElementById('sort-menu');
