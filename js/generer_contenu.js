@@ -244,10 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = mediaPath;
             container.appendChild(img);
         } else if (mème.typeMeme === 'audio') {
-            const audio = document.createElement('button');
-            audio.setAttribute('data-sound', mediaPath);
-            audio.textContent = 'Play Audio';
-            container.appendChild(audio);
+            const button = document.createElement('button');
+            button.setAttribute('class', 'button');
+            button.setAttribute('data-sound', mediaPath);
+            button.textContent = 'Play Sound';
+            container.appendChild(button);
             if (shouldPlay) audio.play();
         }
         modal.style.display = 'block';
