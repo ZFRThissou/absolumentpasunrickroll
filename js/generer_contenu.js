@@ -90,22 +90,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const ext = mème.ext;
             const type = mème.typeMeme;
             let mediaPath, cardContent;
-        
+
             if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                // Note: on retire "controls" pour que le clic sur la vidéo déclenche la popup
-                cardContent = `<video class="open-modal-play"><source src="${mediaPath}"></video>`;
+                cardContent = `<video controls><source src="${mediaPath}"></video>`;
             } else if (type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
-                cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
+                cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
             } else if (type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
+                cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
             }
-            
+
             const cardHTML = document.createElement('div');
             cardHTML.classList.add('video-card');
-            cardHTML.style.cursor = "pointer"; // Indique que toute la carte est cliquable
             cardHTML.innerHTML = `
                 ${cardContent}
                 <div class="video-info">
@@ -116,21 +114,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="event.stopPropagation(); shareVideo('${mediaPath}', '${title}')">
+                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
             `;
-            // --- LOGIQUE DE CLIC ---
-            // 1. Clic sur le média (Vidéo/Bouton) -> Ouvre et LANCE
-            cardHTML.querySelector('.open-modal-play').onclick = (e) => {
-                e.stopPropagation(); // Empêche le clic sur la carte parente
-                openMemeModal(mème, mediaPath, true);
-            };
-            // 2. Clic sur le reste de la carte -> Ouvre SANS LANCER
-            cardHTML.onclick = () => {
-                openMemeModal(mème, mediaPath, false);
-            };
             videoGrid.appendChild(cardHTML);
+
+            const favoriteButton = cardHTML.querySelector('.add-to-favorites');
+            const favKey = (pageType === 'index') ? `${type}Favorites` : pageType;
+            updateFavoriteButton(favoriteButton, mème, favKey);
         });
 
         if (dataList.some(m => m.typeMeme === 'audio')) initAudioButtons();
@@ -219,38 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) { 
             console.error('Erreur DB:', e); 
         }
-    }
-
-    function openMemeModal(mème, mediaPath, shouldPlay) {
-        const modal = document.getElementById('meme-modal');
-        const container = document.getElementById('modal-media-container');
-        const title = document.getElementById('modal-title');
-        title.textContent = mème.title;
-        container.innerHTML = ''; // Reset
-        if (mème.typeMeme === 'video') {
-            const video = document.createElement('video');
-            video.src = mediaPath;
-            video.controls = true;
-            container.appendChild(video);
-            if (shouldPlay) video.play();
-        } else if (mème.typeMeme === 'image') {
-            const img = document.createElement('img');
-            img.src = mediaPath;
-            container.appendChild(img);
-        }
-        modal.style.display = 'block';
-        // Fermeture
-        const closeBtn = document.querySelector('.close-modal');
-        closeBtn.onclick = () => {
-            modal.style.display = 'none';
-            container.innerHTML = ''; // Stop la vidéo
-        };
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                container.innerHTML = '';
-            }
-        };
     }
 
     function initAudioButtons() {
