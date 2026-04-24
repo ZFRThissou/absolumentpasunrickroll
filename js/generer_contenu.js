@@ -229,10 +229,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('meme-modal');
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
+        const globalAudio = document.getElementById('audio'); // Récupération globale
+
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
-        container.innerHTML = ''; // Reset
+        container.innerHTML = ''; 
+
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
@@ -244,38 +247,42 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = mediaPath;
             container.appendChild(img);
         } else if (mème.typeMeme === 'audio') {
-            const button = document.createElement('button');
-            button.setAttribute('class', 'button');
-            button.setAttribute('data-sound', mediaPath);
-            button.textContent = 'Play Sound';
-            container.appendChild(button);
-            if (shouldPlay) audio.play();
+            const btnPlay = document.createElement('button');
+            btnPlay.className = 'button';
+            btnPlay.textContent = 'Play Sound';
+            container.appendChild(btnPlay);
+
+            if (globalAudio) {
+                btnPlay.onclick = () => {
+                    globalAudio.src = mediaPath;
+                    globalAudio.currentTime = 0;
+                    globalAudio.play();
+                };
+                if (shouldPlay) {
+                    globalAudio.src = mediaPath;
+                    globalAudio.play();
+                }
+            }
         }
-        modal.style.display = 'block';
-        // Fermeture
-        const closeBtn = document.querySelector('.close-modal');
-        closeBtn.onclick = () => {
+
+        const closeModal = () => {
             modal.style.display = 'none';
-            container.innerHTML = ''; // Stop la vidéo
-            if (mème.typeMeme === 'audio') {audio.pause();}
+            container.innerHTML = '';
+            if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
         };
+
+        const closeBtn = document.querySelector('.close-modal');
+        closeBtn.onclick = closeModal;
+
         window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                container.innerHTML = '';
-                if (mème.typeMeme === 'audio') {audio.pause();}
-                document.body.style.overflow = '';
-            }
+            if (event.target == modal) closeModal();
         };
-        // Gestion de la touche Echap
+
         const escHandler = (event) => {
             if (event.key === "Escape") {
-                modal.style.display = 'none';
-                container.innerHTML = '';
-                if (mème.typeMeme === 'audio') {audio.pause();}
-                document.body.style.overflow = ''; // Réactive le scroll
-                window.removeEventListener('keydown', escHandler); // Nettoie l'écouteur
+                closeModal();
+                window.removeEventListener('keydown', escHandler);
             }
         };
         window.addEventListener('keydown', escHandler);
