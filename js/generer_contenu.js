@@ -242,6 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
             video.controls = true;
             container.appendChild(video);
             if (shouldPlay) video.play();
+            const desc = document.getElementById('modal-description');
+            desc.textContent = `Durée : ${mème.duree ? mème.duree + 's' : 'Inconnue'} | Ajouté le : ${mème.date instanceof Date && mème.date.getTime() > 0 ? mème.date.toLocaleDateString() : 'Inconnue'}`;
         } else if (mème.typeMeme === 'image') {
             const img = document.createElement('img');
             img.src = mediaPath;
