@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const card = document.createElement('div');
             card.classList.add('video-card');
+            card.style.cursor = "pointer";
             card.innerHTML = `
                 ${cardContent}
                 <div class="video-info">
