@@ -244,8 +244,9 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = mediaPath;
             container.appendChild(img);
         } else if (mème.typeMeme === 'audio') {
-            const audio = document.createElement('audio');
-            audio.src = mediaPath;
+            const audio = document.createElement('button');
+            audio.setAttribute('data-sound', mediaPath);
+            audio.textContent = 'Play Audio';
             container.appendChild(audio);
             if (shouldPlay) audio.play();
         }
@@ -255,24 +256,20 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = () => {
             modal.style.display = 'none';
             container.innerHTML = ''; // Stop la vidéo
-            if (mème.typeMeme === 'audio') {audio.pause();}
             document.body.style.overflow = '';
         };
         window.onclick = (event) => {
             if (event.target == modal) {
                 modal.style.display = 'none';
                 container.innerHTML = '';
-                if (mème.typeMeme === 'audio') {audio.pause();}
                 document.body.style.overflow = '';
             }
         };
-
         // Gestion de la touche Echap
         const escHandler = (event) => {
             if (event.key === "Escape") {
                 modal.style.display = 'none';
                 container.innerHTML = '';
-                if (mème.typeMeme === 'audio') {audio.pause();}
                 document.body.style.overflow = ''; // Réactive le scroll
                 window.removeEventListener('keydown', escHandler); // Nettoie l'écouteur
             }
