@@ -229,6 +229,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('meme-modal');
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; // Reset
         if (mème.typeMeme === 'video') {
@@ -248,13 +250,26 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = () => {
             modal.style.display = 'none';
             container.innerHTML = ''; // Stop la vidéo
+            document.body.style.overflow = '';
         };
         window.onclick = (event) => {
             if (event.target == modal) {
                 modal.style.display = 'none';
                 container.innerHTML = '';
+                document.body.style.overflow = '';
             }
         };
+
+        // Gestion de la touche Echap
+        const escHandler = (event) => {
+            if (event.key === "Escape") {
+                modal.style.display = 'none';
+                container.innerHTML = '';
+                document.body.style.overflow = ''; // Réactive le scroll
+                window.removeEventListener('keydown', escHandler); // Nettoie l'écouteur
+            }
+        };
+        window.addEventListener('keydown', escHandler);
     }
 
     function initAudioButtons() {
