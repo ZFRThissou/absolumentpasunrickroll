@@ -1,22 +1,41 @@
 document.addEventListener('DOMContentLoaded', function() {
     const videoGrid = document.querySelector('.video-grid') || document.querySelector('.main-content');
+    if (!videoGrid) return;
+
     let currentMemesData = []; // Stockage local des favoris pour le tri
     let currentSortType = '';
 
+    // --- AJOUT : Affichage du loader au démarrage ---
+    function showLoader() {
+        videoGrid.innerHTML = `
+            <div class="loader-container">
+                <div class="spinner"></div>
+                <p style="color: white; margin-top: 10px;">Chargement de vos favoris...</p>
+            </div>
+        `;
+    }
+
     // 1. Initialisation : Récupérer et centraliser tous les favoris
     function loadFavorites() {
+        showLoader(); // On affiche le spinner dès le début
+
         const videoFavs = JSON.parse(localStorage.getItem('videoFavorites')) || [];
         const audioFavs = JSON.parse(localStorage.getItem('audioFavorites')) || [];
         const imageFavs = JSON.parse(localStorage.getItem('imageFavorites')) || [];
 
-        // On normalise les données pour avoir un format commun (objet avec title, ext, type)
+        // On normalise les données
         const allFavs = [
             ...videoFavs.map(v => ({ ...v, type: 'video' })),
-            ...audioFavs.map(title => ({ title: title, ext: 'mp3', type: 'audio' })), // On assume .mp3 pour l'audio
+            ...audioFavs.map(title => ({ title: title, ext: 'mp3', type: 'audio' })),
             ...imageFavs.map(i => ({ ...i, type: 'image' }))
         ];
 
-        // Récupération des likes en temps réel pour permettre le tri par popularité
+        if (allFavs.length === 0) {
+            videoGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Aucun mème favori enregistré.</p>';
+            return;
+        }
+
+        // Récupération des likes en temps réel
         fetch('/.netlify/functions/get-all-likes')
             .then(res => res.json())
             .then(stats => {
@@ -35,19 +54,19 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(err => {
                 console.error("Erreur chargement stats:", err);
-                // Si la DB échoue, on affiche quand même les favoris sans les likes
+                // Si la DB échoue, on affiche quand même les favoris sans les likes (le loader partira ici)
                 currentMemesData = allFavs.map(m => ({ ...m, likes: 0 }));
                 renderGrid(currentMemesData);
             });
     }
 
-    // 2. Fonction d'affichage (inspirée de generer_contenu.js)
+    // 2. Fonction d'affichage
     function renderGrid(dataList) {
-        if (!videoGrid) return;
+        // Le innerHTML = '' supprime le loader
         videoGrid.innerHTML = '';
 
         if (dataList.length === 0) {
-            videoGrid.innerHTML = '<p>Aucun mème favori enregistré.</p>';
+            videoGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Aucun mème favori enregistré.</p>';
             return;
         }
 
@@ -56,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const ext = mème.ext;
             let mediaPath, cardContent;
 
-            // Définition du chemin et du contenu selon le type
             if (mème.type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
                 cardContent = `<video controls><source src="${mediaPath}"></video>`;
@@ -78,12 +96,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="favorite-container">
                             <div class="add-to-favorites">
                                 <img class="remove-from-favorites" src="image/icones/favoris_cliquer.png" 
-                                     data-type="${mème.type}" data-title="${title}">
+                                     data-type="${mème.type}" data-title="${title}" style="cursor: pointer;">
                             </div>
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png"></a>
-                        <img class="partage-button" src="image/icones/partager.png" onclick="shareVideo('${mediaPath}', '${title}')">
+                        <img class="partage-button" src="image/icones/partager.png" style="cursor: pointer;" onclick="shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
             `;
@@ -93,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         attachInteractions();
     }
 
-    // 3. Système de tri (Identique à generer_contenu.js)
+    // 3. Système de tri
     function initSortEvents() {
         const btn = document.getElementById('sort-button');
         const menu = document.getElementById('sort-menu');
@@ -123,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGrid(currentMemesData);
     }
 
-    // 4. Gestion des clics (Play et Suppression)
+    // 4. Gestion des clics
     function attachInteractions() {
         // Play Sound
         document.querySelectorAll('.button').forEach(btn => {
@@ -144,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const type = this.getAttribute('data-type');
                 const favoritesKey = type + 'Favorites';
 
-                // Mise à jour LocalStorage
                 let favs = JSON.parse(localStorage.getItem(favoritesKey)) || [];
                 if (type === 'audio') {
                     favs = favs.filter(t => t !== title);
@@ -153,12 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 localStorage.setItem(favoritesKey, JSON.stringify(favs));
 
-                // Mise à jour de la base de données (décrémenter le like)
                 try {
                     await fetch(`/.netlify/functions/like-meme?id=${encodeURIComponent(title)}&action=remove`);
                 } catch(e) { console.error("Erreur DB", e); }
 
-                // Mise à jour de l'affichage local
                 currentMemesData = currentMemesData.filter(m => m.title !== title);
                 renderGrid(currentMemesData);
             };
