@@ -243,6 +243,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const img = document.createElement('img');
             img.src = mediaPath;
             container.appendChild(img);
+        } else if (mème.typeMeme === 'audio') {
+            const audio = document.createElement('audio');
+            audio.src = mediaPath;
+            container.appendChild(audio);
+            if (shouldPlay) audio.play();
         }
         modal.style.display = 'block';
         // Fermeture
