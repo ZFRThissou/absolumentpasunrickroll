@@ -251,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
             btnPlay.className = 'button';
             btnPlay.textContent = 'Play Sound';
             container.appendChild(btnPlay);
-
             if (globalAudio) {
                 btnPlay.onclick = () => {
                     globalAudio.src = mediaPath;
@@ -264,21 +263,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-
         const closeModal = () => {
             modal.style.display = 'none';
             container.innerHTML = '';
             if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
         };
-
         const closeBtn = document.querySelector('.close-modal');
         closeBtn.onclick = closeModal;
-
         window.onclick = (event) => {
             if (event.target == modal) closeModal();
         };
-
         const escHandler = (event) => {
             if (event.key === "Escape") {
                 closeModal();
