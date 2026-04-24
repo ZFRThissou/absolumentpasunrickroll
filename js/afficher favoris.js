@@ -77,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (mème.type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                cardContent = `<video controls><source src="${mediaPath}"></video>`;
+                cardContent = `<video class="open-modal-play"><source src="${mediaPath}"></video>`;
             } else if (mème.type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
-                cardContent = `<button class="button" data-sound="${mediaPath}">Play Sound</button>`;
+                cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
             } else if (mème.type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" alt="Image thumbnail">`;
+                cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
             }
 
             const card = document.createElement('div');
@@ -101,10 +101,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png"></a>
-                        <img class="partage-button" src="image/icones/partager.png" style="cursor: pointer;" onclick="shareVideo('${mediaPath}', '${title}')">
+                        <img class="partage-button" src="image/icones/partager.png" style="cursor: pointer;" onclick="event.stopPropagation(); shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
             `;
+            card.querySelector('.open-modal-play').onclick = (e) => {
+                e.stopPropagation(); // Empêche le clic sur la carte parente
+                openMemeModal(mème, mediaPath, true);
+            };
+            card.onclick = () => {
+                openMemeModal(mème, mediaPath, false);
+            };
             videoGrid.appendChild(card);
         });
 
@@ -139,6 +146,63 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'likes-asc': currentMemesData.sort((a,b) => a.likes - b.likes); break;
         }
         renderGrid(currentMemesData);
+    }
+
+    function openMemeModal(mème, mediaPath, shouldPlay){
+        const modal = document.getElementById('meme-modal');
+        const container = document.getElementById('modal-media-container');
+        const title = document.getElementById('modal-title');
+        const globalAudio = document.getElementById('audio');
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        title.textContent = mème.title;
+        container.innerHTML = '';
+        title.textContent = mème.title;
+        if (mème.type === 'video') {
+            const video = document.createElement('video');
+            video.src = mediaPath;
+            video.controls = true;
+            container.appendChild(video);
+            if (shouldPlay) video.play();
+        } else if (mème.type === 'image') {
+            const img = document.createElement('img');
+            img.src = mediaPath;
+            container.appendChild(img);
+        } else if (mème.type === 'audio') {
+            const btnPlay = document.createElement('button');
+            btnPlay.className = 'button';
+            btnPlay.textContent = 'Play Sound';
+            container.appendChild(btnPlay);
+            if (globalAudio) {
+                btnPlay.onclick = () => {
+                    globalAudio.src = mediaPath;
+                    globalAudio.currentTime = 0;
+                    globalAudio.play();
+                };
+                if (shouldPlay) {
+                    globalAudio.src = mediaPath;
+                    globalAudio.play();
+                }
+            }
+        }
+        const closeModal = () => {
+            modal.style.display = 'none';
+            container.innerHTML = '';
+            if (globalAudio) globalAudio.pause();
+            document.body.style.overflow = '';
+        };
+        const closeBtn = document.querySelector('.close_modal');
+        closeBtn.onclick = closeModal;
+        window.onclick = (event) => {
+            if (event.target === modal) closeModal();
+        };
+        const escHandler = (event) => {
+            if (event.key === "Escape") {
+                closeModal();
+                window.removeEventListener('keydown', escHandler);
+            }
+        };
+        window.addEventListener('keydown', escHandler);
     }
 
     // 4. Gestion des clics
