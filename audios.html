@@ -89,6 +89,18 @@
         </div>
     </div>
     <audio id="audio"></audio>
+    <script>
+        function playSound(event) {
+            const soundFile = event.target.getAttribute('data-sound');
+            const audio = document.getElementById('audio');
+            audio.src = soundFile;
+            audio.currentTime = 0;
+            audio.play();
+        }
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', playSound);
+        });
+    </script>
 </body>
 </html>
 
