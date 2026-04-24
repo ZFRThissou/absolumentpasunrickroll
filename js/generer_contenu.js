@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.setAttribute('data-sound', mediaPath);
             button.textContent = 'Play Sound';
             container.appendChild(button);
-            if (shouldPlay) button.click();
+            if (shouldPlay) audio.play();
         }
         modal.style.display = 'block';
         // Fermeture
@@ -257,12 +257,14 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = () => {
             modal.style.display = 'none';
             container.innerHTML = ''; // Stop la vidéo
+            if (mème.typeMeme === 'audio') {audio.pause();}
             document.body.style.overflow = '';
         };
         window.onclick = (event) => {
             if (event.target == modal) {
                 modal.style.display = 'none';
                 container.innerHTML = '';
+                if (mème.typeMeme === 'audio') {audio.pause();}
                 document.body.style.overflow = '';
             }
         };
@@ -271,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.key === "Escape") {
                 modal.style.display = 'none';
                 container.innerHTML = '';
+                if (mème.typeMeme === 'audio') {audio.pause();}
                 document.body.style.overflow = ''; // Réactive le scroll
                 window.removeEventListener('keydown', escHandler); // Nettoie l'écouteur
             }
