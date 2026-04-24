@@ -255,12 +255,14 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = () => {
             modal.style.display = 'none';
             container.innerHTML = ''; // Stop la vidéo
+            audio.pause();
             document.body.style.overflow = '';
         };
         window.onclick = (event) => {
             if (event.target == modal) {
                 modal.style.display = 'none';
                 container.innerHTML = '';
+                audio.pause();
                 document.body.style.overflow = '';
             }
         };
@@ -270,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.key === "Escape") {
                 modal.style.display = 'none';
                 container.innerHTML = '';
+                audio.pause();
                 document.body.style.overflow = ''; // Réactive le scroll
                 window.removeEventListener('keydown', escHandler); // Nettoie l'écouteur
             }
