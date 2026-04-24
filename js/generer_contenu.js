@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.setAttribute('data-sound', mediaPath);
             button.textContent = 'Play Sound';
             container.appendChild(button);
-            if (shouldPlay) audio.play();
+            if (shouldPlay) button.click();
         }
         modal.style.display = 'block';
         // Fermeture
