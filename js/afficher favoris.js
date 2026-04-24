@@ -188,13 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeModal = () => {
             modal.style.display = 'none';
             container.innerHTML = '';
-            if (globalAudio) globalAudio.pause();
+            if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
         };
-        const closeBtn = document.querySelector('.close_modal');
+        const closeBtn = document.querySelector('.close-modal');
         closeBtn.onclick = closeModal;
         window.onclick = (event) => {
-            if (event.target === modal) closeModal();
+            if (event.target == modal) closeModal();
         };
         const escHandler = (event) => {
             if (event.key === "Escape") {
