@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentSortType = 'likes-desc';
             sortMemes('likes-desc');
         } else {
-            renderGrid(currentMemesData);
+            currentSortType = 'name-asc';
+            sortMemes('name-asc');
         }
         
         initSortEvents();
