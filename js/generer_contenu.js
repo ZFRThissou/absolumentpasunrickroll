@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="add-to-favorites"></div>
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
-                        <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
+                        <a class="download-button" onclick="event.stopPropagation()" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
                         <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="event.stopPropagation(); shareVideo('${mediaPath}', '${title}')">
                     </div>
                 </div>
