@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>${title}</h3>
                     <div class="video-actions">
                         <div class="favorite-container">
-                            <div class="add-to-favorites"></div>
+                            <div class="add-to-favorites" onclick="event.stopPropagation()"></div>
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" onclick="event.stopPropagation()" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ? favorites.includes(mèmeData.title) 
             : favorites.some(fav => fav.title === mèmeData.title);
 
-        button.innerHTML = `<img onclick="event.stopPropagation()" src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
+        button.innerHTML = `<img src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
         button.onclick = () => toggleFavorite(button, mèmeData, favoritesKey);
     }
 
