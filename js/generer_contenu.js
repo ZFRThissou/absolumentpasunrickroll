@@ -230,20 +230,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio'); // Récupération globale
+        const desc = document.getElementById('modal-description');
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; 
-
+        desc.textContent = `${mème.desc ? mème.desc : 'Inconnue'}`;
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
             video.controls = true;
             container.appendChild(video);
             if (shouldPlay) video.play();
-            const desc = document.getElementById('modal-description');
-            desc.textContent = `${mème.desc ? mème.desc : 'Inconnue'}`;
+            
         } else if (mème.typeMeme === 'image') {
             const img = document.createElement('img');
             img.src = mediaPath;
