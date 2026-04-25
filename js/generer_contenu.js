@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ? favorites.includes(mèmeData.title) 
             : favorites.some(fav => fav.title === mèmeData.title);
 
-        button.innerHTML = `<img src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
+        button.innerHTML = `<img onclick="event.stopPropagation()" src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
         button.onclick = () => toggleFavorite(button, mèmeData, favoritesKey);
     }
 
