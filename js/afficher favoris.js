@@ -154,11 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio');
+        const desc = document.getElementById('modal-description');
+
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = '';
-        title.textContent = mème.title;
+        desc.textContent = `${mème.desc ? mème.desc : 'Pas de description disponible.'}`;
         if (mème.type === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
