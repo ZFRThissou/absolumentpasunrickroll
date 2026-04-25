@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>${title}</h3>
                     <div class="video-actions">
                         <div class="favorite-container">
-                            <div class="add-to-favorites" onclick="event.stopPropagation()"></div>
+                            <div class="add-to-favorites"></div>
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" onclick="event.stopPropagation()" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
