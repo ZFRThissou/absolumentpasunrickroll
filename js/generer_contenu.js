@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.appendChild(video);
             if (shouldPlay) video.play();
             const desc = document.getElementById('modal-description');
-            desc.textContent = `Durée : ${mème.duree ? mème.duree + 's' : 'Inconnue'} | Ajouté le : ${mème.date instanceof Date && mème.date.getTime() > 0 ? mème.date.toLocaleDateString() : 'Inconnue'}`;
+            desc.textContent = `${mème.desc ? mème.desc : 'Inconnue'}`;
         } else if (mème.typeMeme === 'image') {
             const img = document.createElement('img');
             img.src = mediaPath;
