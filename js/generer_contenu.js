@@ -71,6 +71,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         initSortEvents();
+        const urlParams = new URLSearchParams(window.location.search);
+        const memeTitleFromUrl = urlParams.get('meme');
+        if (memeTitleFromUrl) {
+            const mèmeToOpen = currentMemesData.find(m => m.title === memeTitleFromUrl);
+            if (mèmeToOpen) {
+                // Déterminer le chemin du média selon le type
+                let mediaPath;
+                if (mèmeToOpen.typeMeme === 'video') mediaPath = `image/mèmes/vidéos/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
+                else if (mèmeToOpen.typeMeme === 'audio') mediaPath = `image/mèmes/audios/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
+                else if (mèmeToOpen.typeMeme === 'image') mediaPath = `image/mèmes/images/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
+                
+                openMemeModal(mèmeToOpen, mediaPath, false);
+            }
+        }
     })
     .catch(error => {
         console.error('Erreur:', error);
@@ -232,6 +246,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio'); // Récupération globale
         const desc = document.getElementById('modal-description');
+        const newUrl = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
+        history.pushState({ title: mème.title }, mème.title, newUrl);
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -271,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.innerHTML = '';
             if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
+            history.pushState({}, '', window.location.pathname);
         };
         const closeBtn = document.querySelector('.close-modal');
         closeBtn.onclick = closeModal;
@@ -285,6 +302,13 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         window.addEventListener('keydown', escHandler);
     }
+
+    window.onpopstate = function(event) {
+        const modal = document.getElementById('meme-modal');
+        if (modal && modal.style.display === 'block') {
+            document.querySelector('.close-modal').click();
+        }
+    };
 
     function initAudioButtons() {
         document.querySelectorAll('.button').forEach(btn => {
