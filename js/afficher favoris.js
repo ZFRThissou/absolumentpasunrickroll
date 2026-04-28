@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio');
         const desc = document.getElementById('modal-description');
-        const newUrl = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
+        const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
 
         modal.style.display = 'block';
