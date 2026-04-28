@@ -212,6 +212,15 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('keydown', escHandler);
     }
 
+    window.onpopstate = function(event) {
+        const modal = document.getElementById('meme-modal');
+        if (modal && modal.style.display === 'block') {
+            // Appelle votre logique de fermeture si la modale est ouverte
+            // (Note : vous devrez peut-être rendre closeModal accessible ou simuler un clic)
+            document.querySelector('.close-modal').click();
+        }
+    };
+
     // 4. Gestion des clics
     function attachInteractions() {
         // Play Sound
