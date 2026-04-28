@@ -212,6 +212,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('keydown', escHandler);
     }
 
+    window.onpopstate = function(event) {
+        const modal = document.getElementById('meme-modal');
+        if (modal && modal.style.display === 'block') {
+            document.querySelector('.close-modal').click();
+        }
+    };
+
     // 4. Gestion des clics
     function attachInteractions() {
         // Play Sound
