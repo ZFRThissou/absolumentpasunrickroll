@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
             }
 
-            const ShareURL = window.location.pathname + '?meme=' + encodeURIComponent(mème.title); 
+            const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
             const card = document.createElement('div');
             card.classList.add('video-card');
             card.style.cursor = "pointer";
@@ -211,13 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         window.addEventListener('keydown', escHandler);
     }
-
-    window.onpopstate = function(event) {
-        const modal = document.getElementById('meme-modal');
-        if (modal && modal.style.display === 'block') {
-            document.querySelector('.close-modal').click();
-        }
-    };
 
     // 4. Gestion des clics
     function attachInteractions() {
