@@ -117,7 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
                 cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
             }
-            
+
+            const ShareURL = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
             const cardHTML = document.createElement('div');
             cardHTML.classList.add('video-card');
             cardHTML.style.cursor = "pointer"; // Indique que toute la carte est cliquable
@@ -131,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" onclick="event.stopPropagation()" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="event.stopPropagation(); shareVideo('${mediaPath}', '${title}')">
+                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="event.stopPropagation(); shareVideo('${ShareURL}', '${title}')">
                     </div>
                 </div>
             `;
