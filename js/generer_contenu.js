@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
             }
 
-            const ShareURL = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
+            const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
             const cardHTML = document.createElement('div');
             cardHTML.classList.add('video-card');
             cardHTML.style.cursor = "pointer"; // Indique que toute la carte est cliquable
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio'); // Récupération globale
         const desc = document.getElementById('modal-description');
-        const newUrl = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
+        const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
 
         modal.style.display = 'block';
