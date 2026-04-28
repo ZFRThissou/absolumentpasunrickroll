@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
             }
 
+            const ShareURL = window.location.pathname + '?meme=' + encodeURIComponent(mème.title); 
             const card = document.createElement('div');
             card.classList.add('video-card');
             card.style.cursor = "pointer";
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
                         </div>
                         <a class="download-button" href="${mediaPath}" download=""><img src="image/icones/telechargements.png"></a>
-                        <img class="partage-button" src="image/icones/partager.png" style="cursor: pointer;" onclick="event.stopPropagation(); shareVideo('${mediaPath}', '${title}')">
+                        <img class="partage-button" src="image/icones/partager.png" style="cursor: pointer;" onclick="event.stopPropagation(); shareVideo('${ShareURL}', '${title}')">
                     </div>
                 </div>
             `;
@@ -155,6 +156,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio');
         const desc = document.getElementById('modal-description');
+        const newUrl = window.location.pathname + '?meme=' + encodeURIComponent(mème.title);
+        history.pushState({ title: mème.title }, mème.title, newUrl);
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -193,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.innerHTML = '';
             if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
+            history.pushState({}, '', window.location.pathname);
         };
         const closeBtn = document.querySelector('.close-modal');
         closeBtn.onclick = closeModal;
