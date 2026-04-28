@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('modal-title');
         const globalAudio = document.getElementById('audio');
         const desc = document.getElementById('modal-description');
+        const lastUrl = window.location.pathname;
         const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
 
@@ -196,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.innerHTML = '';
             if (globalAudio) globalAudio.pause(); // Correction ici
             document.body.style.overflow = '';
-            history.pushState({}, '', window.location.pathname);
+            history.pushState({}, '', lastUrl);
         };
         const closeBtn = document.querySelector('.close-modal');
         closeBtn.onclick = closeModal;
