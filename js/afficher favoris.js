@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = '';
-        desc.textContent = `${mème.desc ? mème.desc : 'La description n'est pas encore disponible.'}`;
+        desc.textContent = `${mème.desc ? mème.desc : "La description n'est pas encore disponible."}`;
         if (mème.type === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
