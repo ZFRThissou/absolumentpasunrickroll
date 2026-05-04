@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; 
-        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
+        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(7)]}`;
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
