@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; 
-        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(7)]}`;
+        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
@@ -312,6 +312,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.close-modal').click();
         }
     };
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
 
     function initAudioButtons() {
         document.querySelectorAll('.button').forEach(btn => {
