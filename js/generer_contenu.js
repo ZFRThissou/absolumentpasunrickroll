@@ -250,12 +250,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastUrl = window.location.pathname;
         const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
+        const notDesc = ["La description n'est pas encore disponible.","Traquille ça arrive (quand 1 an environ).","Bon tu vois bien que y'a pas de description masi ça arrive.","Je suis pas sûr mais je crois que y'a pas de description après elle viendra peut être mais bon avec un site aussi grand et beaucoup de description a faire je sais pas si c'est avec elle que je vait commencer après je suis quasiment sûr que avant la fin de l'anné il y aura une description mais quasiment.","Message de la france non.","En faite non.","Je crois pas nannnn."];
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; 
-        desc.textContent = `${mème.desc ? mème.desc : "La description n'est pas encore disponible."}`;
+        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
