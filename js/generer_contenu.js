@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initSortEvents();
         const urlParams = new URLSearchParams(window.location.search);
         const memeTitleFromUrl = urlParams.get('meme');
+        const playMemeAtOpening = urlParams.get('play') === 'true';
         if (memeTitleFromUrl) {
             const mèmeToOpen = currentMemesData.find(m => m.title === memeTitleFromUrl);
             if (mèmeToOpen) {
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 else if (mèmeToOpen.typeMeme === 'audio') mediaPath = `image/mèmes/audios/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
                 else if (mèmeToOpen.typeMeme === 'image') mediaPath = `image/mèmes/images/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
                 
-                openMemeModal(mèmeToOpen, mediaPath, false);
+                openMemeModal(mèmeToOpen, mediaPath, playMemeAtOpening);
             }
         }
     })
