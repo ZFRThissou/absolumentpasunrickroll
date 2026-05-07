@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 else if (mèmeToOpen.typeMeme === 'image') mediaPath = `image/mèmes/images/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
                 
                 if (playMemeAtOpening === 'true') {
+                    console.log('Ouverture avec lecture automatique');
                     openMemeModal(mèmeToOpen, mediaPath, true);
                 } else {
                     openMemeModal(mèmeToOpen, mediaPath, false);
