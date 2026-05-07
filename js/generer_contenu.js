@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const memeTitleFromUrl = urlParams.get('meme');
         const playMemeAtOpening = urlParams.get('play') === 'true';
+        console.log(playMemeAtOpening);
         if (memeTitleFromUrl) {
             const mèmeToOpen = currentMemesData.find(m => m.title === memeTitleFromUrl);
             if (mèmeToOpen) {
