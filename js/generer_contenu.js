@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loader.className = 'loader-container';
     loader.innerHTML = `
         <div class="spinner"></div>
-        <p style="color: white; margin-top: 10px;">Chargement des mèmes...</p>
+        <p style="color: black; margin-top: 10px;">Chargement des mèmes...</p>
     `;
     videoGrid.appendChild(loader);
 
