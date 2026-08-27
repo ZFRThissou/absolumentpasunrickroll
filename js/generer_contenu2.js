@@ -173,6 +173,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
+
+        isFetching = false; // Le chargement est terminé
     }
 
     function initSortEvents() {
@@ -203,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const scrollHeight = document.documentElement.scrollHeight;
     
         // Si on est à moins de 200 pixels du VRAI bas de la page
-        if ((windowHeight + scrollTop) >= scrollHeight - 250) {
+        if ((windowHeight + scrollTop) >= scrollHeight - 200) {
             
             if (!isFetching && (currentPage * MEMES_PER_PAGE < activeMemesList.length)) {
                 isFetching = true;
