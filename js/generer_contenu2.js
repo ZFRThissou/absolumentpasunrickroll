@@ -127,14 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
             if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                // Note: on retire "controls" pour que le clic sur la vidéo déclenche la popup
-                cardContent = `<video class="open-modal-play"><source src="${mediaPath}"></video>`;
+                cardContent = `<video class="open-modal-play" preload="metadata"><source src="${mediaPath}"></video>`;
             } else if (type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
                 cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
             } else if (type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
+                cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
             }
 
             const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
