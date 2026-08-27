@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let databaseStats = {};    
     let currentSortType = ''; 
     let currentPage = 1;
-    const MEMES_PER_PAGE = 40;
+    const MEMES_PER_PAGE = 20;
     let activeMemesList = []; // Garde en mémoire la liste actuelle (pratique avec le tri)
     let isFetching = false; // Empêche de déclencher le chargement 50 fois d'un coup en scrollant
 
