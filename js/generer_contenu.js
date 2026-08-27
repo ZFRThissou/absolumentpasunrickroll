@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMemesData = []; 
     let databaseStats = {};    
     let currentSortType = ''; 
+    let currentPage = 1;
+    const MEMES_PER_PAGE = 20;
+    let activeMemesList = []; // Garde en mémoire la liste actuelle (pratique avec le tri)
+    let isFetching = false; // Empêche de déclencher le chargement 50 fois d'un coup en scrollant
 
     // Détection de la page
     if (path.includes('vid')) {
@@ -71,6 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         initSortEvents();
+        if (typeof initializeSearch === 'function') {
+            initializeSearch(currentMemesData, (filteredList) => {
+                renderGrid(filteredList, false);
+            });
+        }
         const urlParams = new URLSearchParams(window.location.search);
         const memeTitleFromUrl = urlParams.get('meme');
         if (memeTitleFromUrl) {
@@ -91,16 +100,26 @@ document.addEventListener('DOMContentLoaded', function() {
         videoGrid.innerHTML = '<p style="color: white;">Erreur de chargement des données.</p>';
     });
 
-    function renderGrid(dataList) {
-        // Nettoie la grille (supprime le loader)
-        videoGrid.innerHTML = ''; 
+    function renderGrid(dataList, append = false) {
+        // Si on ne fait pas d'ajout, on réinitialise tout
+        if (!append) {
+            videoGrid.innerHTML = ''; // Nettoie la grille (supprime le loader)
+            currentPage = 1;
+            activeMemesList = dataList;
+        }
 
-        if (dataList.length === 0) {
-            videoGrid.innerHTML = '<p style="color: white;">Aucun mème trouvé.</p>';
+        // Calculer la portion de mèmes à afficher
+        const startIndex = (currentPage - 1) * MEMES_PER_PAGE;
+        const endIndex = startIndex + MEMES_PER_PAGE;
+        const memesToRender = activeMemesList.slice(startIndex, endIndex);
+
+        if (!append && memesToRender.length === 0) {
+            videoGrid.innerHTML = '<p style="color: black">Aucun mème trouvé.</p>';
             return;
         }
 
-        dataList.forEach(mème => {
+        //Boucle uniquement sur les 40 mèmes de la page actuelle
+        memesToRender.forEach(mème => {
             const title = mème.title;
             const ext = mème.ext;
             const type = mème.typeMeme;
@@ -108,14 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
             if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                // Note: on retire "controls" pour que le clic sur la vidéo déclenche la popup
-                cardContent = `<video class="open-modal-play"><source src="${mediaPath}"></video>`;
+                cardContent = `<video class="open-modal-play" preload="metadata"><source src="${mediaPath}"></video>`;
             } else if (type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
                 cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
             } else if (type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
+                cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
             }
 
             const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
@@ -153,8 +171,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateFavoriteButton(favoriteButton, mème, favKey);
         });
 
-        if (dataList.some(m => m.typeMeme === 'audio')) initAudioButtons();
-        if (typeof initializeSearch === 'function') initializeSearch();
+        if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
+
+        isFetching = false; // Le chargement est terminé
     }
 
     function initSortEvents() {
@@ -178,6 +197,23 @@ document.addEventListener('DOMContentLoaded', function() {
         window.onclick = () => menu.classList.remove('active');
     }
 
+    window.addEventListener('scroll', () => {
+        // On récupère les dimensions réelles et fiables du document
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
+    
+        // Si on est à moins de 200 pixels du VRAI bas de la page
+        if ((windowHeight + scrollTop) >= scrollHeight - 200) {
+            
+            if (!isFetching && (currentPage * MEMES_PER_PAGE < activeMemesList.length)) {
+                isFetching = true;
+                currentPage++;
+                renderGrid(activeMemesList, true); 
+            }
+        }
+    });
+
     function sortMemes(type) {
         switch(type) {
             case 'name-asc': currentMemesData.sort((a,b) => a.title.localeCompare(b.title)); break;
@@ -189,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'duration-desc': currentMemesData.sort((a,b) => b.duree - a.duree); break;
             case 'duration-asc': currentMemesData.sort((a,b) => a.duree - b.duree); break;
         }
-        renderGrid(currentMemesData);
+        renderGrid(currentMemesData, false);
     }
 
     function updateFavoriteButton(button, mèmeData, favoritesKey) {
