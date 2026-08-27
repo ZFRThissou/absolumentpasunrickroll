@@ -201,16 +201,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.addEventListener('scroll', () => {
-        //Si l'utilisateur est à environ 200 pixels du bas de la page
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-            // On vérifie qu'on n'est pas déjà en train de charger et qu'il reste des mèmes
+        // On récupère les dimensions réelles et fiables du document
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
+    
+        // Si on est à moins de 200 pixels du VRAI bas de la page
+        if ((windowHeight + scrollTop) >= scrollHeight - 200) {
+            
             if (!isFetching && (currentPage * MEMES_PER_PAGE < activeMemesList.length)) {
                 isFetching = true;
                 currentPage++;
-                renderGrid(activeMemesList, true); // true = on ajoute à la suite !
+                renderGrid(activeMemesList, true); 
             }
         }
-    })
+    });
 
     function sortMemes(type) {
         switch(type) {
