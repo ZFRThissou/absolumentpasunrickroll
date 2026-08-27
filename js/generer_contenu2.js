@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('scroll', () => {
         //Si l'utilisateur est à environ 200 pixels du bas de la page
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 400) {
             // On vérifie qu'on n'est pas déjà en train de charger et qu'il reste des mèmes
             if (!isFetching && (currentPage * MEMES_PER_PAGE < activeMemesList.length)) {
                 isFetching = true;
