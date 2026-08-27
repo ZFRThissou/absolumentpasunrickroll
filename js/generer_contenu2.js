@@ -173,10 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
-
-        setTimeout(() => {
-            isFetching = false;
-        }, 500);
     }
 
     function initSortEvents() {
