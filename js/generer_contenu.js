@@ -175,9 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
 
-        setTimeout(() => {
-            isFetching = false;
-        }, 500);
+        isFetching = false; // Le chargement est terminé
     }
 
     function initSortEvents() {
@@ -239,7 +237,10 @@ document.addEventListener('DOMContentLoaded', function() {
             : favorites.some(fav => fav.title === mèmeData.title);
 
         button.innerHTML = `<img src="${isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png'}" alt="Favoris Icon">`;
-        button.onclick = () => toggleFavorite(button, mèmeData, favoritesKey);
+        button.onclick = (e) => {
+            e.stopPropagation(); // Empêche le clic de remonter jusqu'à la carte (et donc d'ouvrir la modale)
+            toggleFavorite(button, mèmeData, favoritesKey);
+        };
     }
 
     async function toggleFavorite(button, mèmeData, favoritesKey) {
