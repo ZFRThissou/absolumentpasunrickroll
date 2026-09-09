@@ -37,7 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Récupération des données (JSON local + Stats DB)
     Promise.all([
         fetch('data/mèmes.json').then(res => res.json()),
-        fetch('/.netlify/functions/get-all-likes').then(res => res.json())
+        fetch('/.netlify/functions/get-all-likes')
+            .then(res => res.ok ? res.json() : [])
+            .catch(() => [])
     ])
     .then(([jsonData, stats]) => {
         let mèmesRaw = [];
