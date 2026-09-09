@@ -175,7 +175,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
 
-        isFetching = false; // Le chargement est terminé
+        setTimeout(() => {
+            isFetching = false;
+        }, 500);
     }
 
     function initSortEvents() {
