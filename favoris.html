@@ -6,6 +6,7 @@
     <link href="css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="image/logo/logo.png">
     <script src="js/afficher favoris.js"></script>
+    <script src="js/recherche.js"></script>
     <script src="js/partager.js"></script>
     <title>Absolumentpasunrickroll</title>
     <!-- Analytics -->
@@ -25,6 +26,15 @@
             <img src="image/logo/logo.png" alt="Logo">
             <p>Absolumentpasunrickroll</p>
         </a>
+        <button type="button" class="back-btn" id="back-btn" aria-label="Retour">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <span class="search-bar">
+            <input type="text" id="search-bar" placeholder="Rechercher des mèmes...">
+        </span>
+        <button type="button" class="search-icon-btn" id="search-icon-btn" aria-label="Rechercher">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
         <div class="sort-container">
             <button id="sort-button">Trier par</button>
             <div id="sort-menu" class="sort-menu">
