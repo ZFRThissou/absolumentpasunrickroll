@@ -51,13 +51,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 renderGrid(currentMemesData);
                 initSortEvents();
+                initSearch();
             })
             .catch(err => {
                 console.error("Erreur chargement stats:", err);
                 // Si la DB échoue, on affiche quand même les favoris sans les likes (le loader partira ici)
                 currentMemesData = allFavs.map(m => ({ ...m, likes: 0 }));
                 renderGrid(currentMemesData);
+                initSearch();
             });
+    }
+
+    // --- AJOUT : branchement de la recherche (Fuse.js), fournie par js/recherche.js ---
+    function initSearch() {
+        if (typeof initializeSearch !== 'function') return; // recherche.js pas chargé sur cette page
+        initializeSearch(currentMemesData, (filteredList) => {
+            renderGrid(filteredList);
+        });
     }
 
     // 2. Fonction d'affichage
