@@ -23,3 +23,25 @@ function initializeSearch(allMemesData, onSearchCallback) {
         }
     };
 }
+
+// ============================================================
+// NOUVEAU : bascule loupe <-> champ de recherche (mode mobile)
+// ============================================================
+document.addEventListener('DOMContentLoaded', function () {
+    const topbar = document.querySelector('.topbar');
+    const searchIconBtn = document.getElementById('search-icon-btn');
+    const backBtn = document.getElementById('back-btn');
+    const searchInput = document.getElementById('search-bar');
+
+    // Si la page n'a pas ces éléments (ex: contacter.html), on ne fait rien
+    if (!topbar || !searchIconBtn || !backBtn) return;
+
+    searchIconBtn.addEventListener('click', () => {
+        topbar.classList.add('search-active');
+        if (searchInput) searchInput.focus();
+    });
+
+    backBtn.addEventListener('click', () => {
+        topbar.classList.remove('search-active');
+    });
+});
