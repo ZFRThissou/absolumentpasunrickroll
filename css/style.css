@@ -374,13 +374,28 @@ body {
 }
 
 /* ============================================================
-   NOUVEAU : boutons loupe / retour (utilisés en mobile)
-   Cachés par défaut sur desktop, activés dans la media query.
+   NOUVEAU : boutons loupe / retour + panneaux de topbar
+   Sur desktop, .topbar-normal et .topbar-search sont transparents
+   (display: contents) : leurs enfants agissent comme avant,
+   directement enfants flex de .topbar, aucun changement visuel.
    ============================================================ */
 
 .nav-label {
     display: block;
 }
+
+.topbar-normal,
+.topbar-search {
+    display: contents;
+}
+
+/* Ordre visuel des éléments (utile en desktop où ils partagent
+   tous le même conteneur flex .topbar) */
+.back-btn        { order: 0; }
+.logo            { order: 1; }
+.search-icon-btn,
+.search-bar      { order: 2; }
+.sort-container  { order: 3; }
 
 .search-icon-btn,
 .back-btn {
@@ -423,9 +438,9 @@ body {
         display: none; /* on garde juste l'icône du logo pour gagner de la place */
     }
 
-    /* --- Barre de recherche : cachée par défaut, remplacée par la loupe --- */
     .search-bar {
-        display: none;
+        display: flex;
+        align-items: center;
         width: auto;
         flex: 1;
         margin: 0 8px;
@@ -436,27 +451,44 @@ body {
         display: flex;
     }
 
-    .sort-container {
-        margin-right: 8px;
-    }
-
-    /* --- Mode recherche actif : la topbar se vide au profit du champ --- */
-    .topbar.search-active .logo,
-    .topbar.search-active .sort-container,
-    .topbar.search-active .search-icon-btn {
-        display: none;
-    }
-
-    .topbar.search-active .back-btn {
+    .back-btn {
         display: flex;
         flex-shrink: 0;
     }
 
-    .topbar.search-active .search-bar {
+    .sort-container {
+        margin-right: 8px;
+    }
+
+    /* --- Les deux panneaux se superposent et glissent l'un sur
+       l'autre au lieu d'apparaître/disparaître d'un coup --- */
+    .topbar-normal,
+    .topbar-search {
         display: flex;
         align-items: center;
-        width: auto;
-        flex: 1;
+        justify-content: space-between;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    /* Panneau recherche : positionné hors écran, juste à droite */
+    .topbar-search {
+        transform: translateX(100%);
+    }
+
+    /* Mode recherche actif : le panneau normal part vers la gauche
+       (il "repart de la gauche" quand on revient en arrière),
+       le panneau recherche arrive depuis la droite */
+    .topbar.search-active .topbar-normal {
+        transform: translateX(-100%);
+    }
+
+    .topbar.search-active .topbar-search {
+        transform: translateX(0);
     }
 
     /* --- Sidebar réduite : icônes seules, sans texte --- */
