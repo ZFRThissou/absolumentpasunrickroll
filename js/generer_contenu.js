@@ -1,27 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Évite d'exécuter le script deux fois si chargé en double
+    if (window.__genererContenuInitialized) return;
+    window.__genererContenuInitialized = true;
+
     const videoGrid = document.querySelector('.video-grid');
     if (!videoGrid) return;
 
-    // --- AJOUT : Affichage du loader au démarrage ---
-    const loader = document.createElement('div');
-    loader.className = 'loader-container';
-    loader.innerHTML = `
-        <div class="spinner"></div>
-        <p style="color: black; margin-top: 10px;">Chargement des mèmes...</p>
-    `;
-    videoGrid.appendChild(loader);
-
     let pageType;
     const path = window.location.pathname.toLowerCase();
-    let currentMemesData = []; 
-    let databaseStats = {};    
-    let currentSortType = ''; 
-    let currentPage = 1;
-    const MEMES_PER_PAGE = 20;
-    let activeMemesList = []; // Garde en mémoire la liste actuelle (pratique avec le tri)
-    let isFetching = false; // Empêche de déclencher le chargement 50 fois d'un coup en scrollant
 
-    // Détection de la page
+    // Détection de la page (placé AVANT la création du loader)
     if (path.includes('vid')) {
         pageType = 'videoFavorites'; 
     } else if (path.includes('audios')) {
@@ -33,6 +21,24 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         return;
     }
+
+    // --- CORRECTION : Affichage unique du loader au démarrage ---
+    if (!videoGrid.querySelector('.loader-container')) {
+        videoGrid.innerHTML = `
+            <div class="loader-container">
+                <div class="spinner"></div>
+                <p style="color: black; margin-top: 10px;">Chargement des mèmes...</p>
+            </div>
+        `;
+    }
+
+    let currentMemesData = []; 
+    let databaseStats = {};    
+    let currentSortType = ''; 
+    let currentPage = 1;
+    const MEMES_PER_PAGE = 20;
+    let activeMemesList = []; // Garde en mémoire la liste actuelle (pratique avec le tri)
+    let isFetching = false; // Empêche de déclencher le chargement 50 fois d'un coup en scrollant
 
     // Récupération des données (JSON local + Stats DB)
     Promise.all([
@@ -120,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        //Boucle uniquement sur les 40 mèmes de la page actuelle
+        //Boucle uniquement sur les mèmes de la page actuelle
         memesToRender.forEach(mème => {
             const title = mème.title;
             const ext = mème.ext;
@@ -329,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeModal = () => {
             modal.style.display = 'none';
             container.innerHTML = '';
-            if (globalAudio) globalAudio.pause(); // Correction ici
+            if (globalAudio) globalAudio.pause();
             document.body.style.overflow = '';
             history.pushState({}, '', lastUrl);
         };
