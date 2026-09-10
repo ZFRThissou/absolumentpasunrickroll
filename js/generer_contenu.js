@@ -22,20 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    let currentMemesData = []; 
+    let databaseStats = {};    
+    let currentSortType = ''; 
+    let currentPage = 1;
+    const MEMES_PER_PAGE = 20;
+    let activeMemesList = [];
+    let isFetching = false;
+
     // --- Affichage des skeletons au démarrage ---
     if (!videoGrid.querySelector('.skeleton-card')) {
         const { fragment } = createSkeletonCards(MEMES_PER_PAGE);
         videoGrid.innerHTML = '';
         videoGrid.appendChild(fragment);
     }
-
-    let currentMemesData = []; 
-    let databaseStats = {};    
-    let currentSortType = ''; 
-    let currentPage = 1;
-    const MEMES_PER_PAGE = 20;
-    let activeMemesList = []; // Garde en mémoire la liste actuelle (pratique avec le tri)
-    let isFetching = false; // Empêche de déclencher le chargement 50 fois d'un coup en scrollant
 
     // Récupération des données (JSON local + Stats DB)
     Promise.all([
