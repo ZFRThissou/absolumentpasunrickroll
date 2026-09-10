@@ -7,12 +7,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- AJOUT : Affichage du loader au démarrage ---
     function showLoader() {
-        videoGrid.innerHTML = `
-            <div class="loader-container">
-                <div class="spinner"></div>
-                <p style="color: white; margin-top: 10px;">Chargement de vos favoris...</p>
-            </div>
-        `;
+        renderSkeletons(videoGrid);
+    }
+
+
+    function renderSkeletons(container, count = 12) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="skeleton-card">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-line title"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
     }
 
     // 1. Initialisation : Récupérer et centraliser tous les favoris
