@@ -475,6 +475,24 @@ body {
         transition: transform 0.3s ease;
     }
 
+    /* Sécurité : le panneau hors écran ne doit jamais pouvoir
+       intercepter un clic, même s'il est encore superposé visuellement */
+    .topbar-normal {
+        pointer-events: auto;
+    }
+
+    .topbar-search {
+        pointer-events: none;
+    }
+
+    .topbar.search-active .topbar-normal {
+        pointer-events: none;
+    }
+
+    .topbar.search-active .topbar-search {
+        pointer-events: auto;
+    }
+
     /* Panneau recherche : positionné hors écran, juste à droite */
     .topbar-search {
         transform: translateX(100%);
