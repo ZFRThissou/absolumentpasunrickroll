@@ -312,6 +312,55 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+
+/* Skeleton loading (effet "shimmer") */
+.skeleton-card {
+    background: #ecf0f1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-thumb,
+.skeleton-line {
+    background: linear-gradient(90deg, #dfe3e6 25%, #eef1f3 37%, #dfe3e6 63%);
+    background-size: 400% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+    border-radius: 6px;
+}
+
+.skeleton-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+}
+
+.skeleton-info {
+    padding: 10px;
+}
+
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+}
+
+.skeleton-line.title {
+    width: 80%;
+}
+
+.skeleton-line.short {
+    width: 40%;
+    height: 20px;
+    margin-bottom: 0;
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+
+
 /* Styles pour la Modale */
 .modal {
     display: none; 
