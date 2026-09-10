@@ -103,15 +103,44 @@ document.addEventListener('DOMContentLoaded', function() {
         videoGrid.innerHTML = '<p style="color: white;">Erreur de chargement des données.</p>';
     });
 
+    function preloadCardMedia(type, mediaPath) {
+        // Les audios n'ont pas de miniature visuelle à précharger.
+        if (type === 'audio') return Promise.resolve();
+    
+        return new Promise((resolve) => {
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                resolve();
+            };
+            const timeout = setTimeout(finish, 4000); // filet de sécurité
+    
+            if (type === 'image') {
+                const img = new Image();
+                img.onload = () => { clearTimeout(timeout); finish(); };
+                img.onerror = () => { clearTimeout(timeout); finish(); };
+                img.src = mediaPath;
+            } else if (type === 'video') {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.muted = true;
+                video.onloadeddata = () => { clearTimeout(timeout); finish(); };
+                video.onerror = () => { clearTimeout(timeout); finish(); };
+                video.src = mediaPath;
+            } else {
+                clearTimeout(timeout);
+                finish();
+            }
+        });
+    }
+
     function renderGrid(dataList, append = false) {
-        // Si on ne fait pas d'ajout, on réinitialise tout
         if (!append) {
-            videoGrid.innerHTML = ''; // Nettoie la grille (supprime le loader)
             currentPage = 1;
             activeMemesList = dataList;
         }
 
-        // Calculer la portion de mèmes à afficher
         const startIndex = (currentPage - 1) * MEMES_PER_PAGE;
         const endIndex = startIndex + MEMES_PER_PAGE;
         const memesToRender = activeMemesList.slice(startIndex, endIndex);
@@ -121,13 +150,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        //Boucle uniquement sur les mèmes de la page actuelle
+        const preloadPromises = [];
+        const cardsToInsert = [];
+
         memesToRender.forEach(mème => {
             const title = mème.title;
             const ext = mème.ext;
             const type = mème.typeMeme;
             let mediaPath, cardContent;
-        
+
             if (type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
                 cardContent = `<video class="open-modal-play" preload="metadata"><source src="${mediaPath}"></video>`;
@@ -142,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
             const cardHTML = document.createElement('div');
             cardHTML.classList.add('video-card');
-            cardHTML.style.cursor = "pointer"; // Indique que toute la carte est cliquable
+            cardHTML.style.cursor = "pointer";
             cardHTML.innerHTML = `
                 ${cardContent}
                 <div class="video-info">
@@ -157,26 +188,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            // --- LOGIQUE DE CLIC ---
-            // 1. Clic sur le média (Vidéo/Bouton) -> Ouvre et LANCE
             cardHTML.querySelector('.open-modal-play').onclick = (e) => {
-                e.stopPropagation(); // Empêche le clic sur la carte parente
+                e.stopPropagation();
                 openMemeModal(mème, mediaPath, true);
             };
-            // 2. Clic sur le reste de la carte -> Ouvre SANS LANCER
             cardHTML.onclick = () => {
                 openMemeModal(mème, mediaPath, false);
             };
-            videoGrid.appendChild(cardHTML);
 
             const favoriteButton = cardHTML.querySelector('.add-to-favorites');
             const favKey = (pageType === 'index') ? `${type}Favorites` : pageType;
             updateFavoriteButton(favoriteButton, mème, favKey);
+
+            cardsToInsert.push(cardHTML);
+            preloadPromises.push(preloadCardMedia(type, mediaPath));
         });
 
-        if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
+        // On attend que toutes les miniatures de cette page soient prêtes
+        // avant de les injecter d'un coup dans la grille.
+        Promise.all(preloadPromises).then(() => {
+            if (!append) {
+                videoGrid.innerHTML = ''; // supprime le skeleton
+            }
+            cardsToInsert.forEach(card => videoGrid.appendChild(card));
 
-        isFetching = false; // Le chargement est terminé
+            if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
+
+            isFetching = false;
+        });
     }
 
     function renderSkeletons(container, count = 12) {
