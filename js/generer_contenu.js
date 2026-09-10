@@ -152,15 +152,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // On affiche des skeletons pendant le préchargement, que ce soit un
-        // premier affichage / tri / recherche (on vide et remplace tout)
-        // ou un ajout en scrollant (on complète à la suite des cartes
-        // déjà affichées, ce qui agrandit scrollHeight immédiatement).
-        if (!append) {
-            videoGrid.innerHTML = '';
+        // En mode "append" (scroll infini), on affiche tout de suite des
+        // skeletons à la suite des cartes existantes : ça donne un feedback
+        // immédiat ET ça agrandit scrollHeight, ce qui empêche le scroll
+        // listener de redéclencher un chargement tant qu'on n'a pas fini.
+        let skeletonElements = [];
+        if (append) {
+            const { fragment, elements } = createSkeletonCards(memesToRender.length);
+            videoGrid.appendChild(fragment);
+            skeletonElements = elements;
         }
-        const { fragment, elements: skeletonElements } = createSkeletonCards(memesToRender.length);
-        videoGrid.appendChild(fragment);
 
         const preloadPromises = [];
         const cardsToInsert = [];
@@ -217,18 +218,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         Promise.all(preloadPromises).then(() => {
-            // On insère les vraies cartes juste avant les skeletons, puis on
-            // retire les skeletons. Fonctionne aussi bien pour un remplacement
-            // complet (skeletons = toute la grille) que pour un ajout en fin
-            // de grille (skeletons = seulement les nouvelles cartes).
-            const referenceNode = skeletonElements[0] || null;
-            cardsToInsert.forEach(card => videoGrid.insertBefore(card, referenceNode));
-            skeletonElements.forEach(el => el.remove());
-    
+            if (append) {
+                // On retire les skeletons de fin de grille et on les remplace
+                // par les vraies cartes, à la même position.
+                const referenceNode = skeletonElements[0] || null;
+                cardsToInsert.forEach(card => videoGrid.insertBefore(card, referenceNode));
+                skeletonElements.forEach(el => el.remove());
+            } else {
+                videoGrid.innerHTML = '';
+                cardsToInsert.forEach(card => videoGrid.appendChild(card));
+            }
+            
             if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
-    
-             isFetching = false;
+
+            isFetching = false;
         });
+            
 
     function createSkeletonCards(count) {
         const fragment = document.createDocumentFragment();
