@@ -22,14 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // --- CORRECTION : Affichage unique du loader au démarrage ---
-    if (!videoGrid.querySelector('.loader-container')) {
-        videoGrid.innerHTML = `
-            <div class="loader-container">
-                <div class="spinner"></div>
-                <p style="color: black; margin-top: 10px;">Chargement des mèmes...</p>
-            </div>
-        `;
+    // --- Affichage des skeletons au démarrage ---
+    if (!videoGrid.querySelector('.skeleton-card')) {
+        renderSkeletons(videoGrid);
     }
 
     let currentMemesData = []; 
@@ -182,6 +177,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
 
         isFetching = false; // Le chargement est terminé
+    }
+
+    function renderSkeletons(container, count = 12) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="skeleton-card">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-line title"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
     }
 
     function initSortEvents() {
