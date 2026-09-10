@@ -82,15 +82,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function preloadCardMedia(type, mediaPath) {
+        // Les audios n'ont pas de miniature visuelle à précharger.
+        if (type === 'audio') return Promise.resolve();
+    
+        return new Promise((resolve) => {
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                resolve();
+            };
+            const timeout = setTimeout(finish, 4000); // filet de sécurité
+    
+            if (type === 'image') {
+                const img = new Image();
+                img.onload = () => { clearTimeout(timeout); finish(); };
+                img.onerror = () => { clearTimeout(timeout); finish(); };
+                img.src = mediaPath;
+            } else if (type === 'video') {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.muted = true;
+                video.onloadeddata = () => { clearTimeout(timeout); finish(); };
+                video.onerror = () => { clearTimeout(timeout); finish(); };
+                video.src = mediaPath;
+            } else {
+                clearTimeout(timeout);
+                finish();
+            }
+        });
+    }
+    
     // 2. Fonction d'affichage
-    function renderGrid(dataList) {
-        // Le innerHTML = '' supprime le loader
-        videoGrid.innerHTML = '';
-
+        function renderGrid(dataList) {
         if (dataList.length === 0) {
             videoGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Aucun mème favori enregistré.</p>';
             return;
         }
+
+        const preloadPromises = [];
+        const cardsToInsert = [];
 
         dataList.forEach(mème => {
             const title = mème.title;
@@ -130,16 +162,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             card.querySelector('.open-modal-play').onclick = (e) => {
-                e.stopPropagation(); // Empêche le clic sur la carte parente
+                e.stopPropagation();
                 openMemeModal(mème, mediaPath, true);
             };
             card.onclick = () => {
                 openMemeModal(mème, mediaPath, false);
             };
-            videoGrid.appendChild(card);
+
+            cardsToInsert.push(card);
+            preloadPromises.push(preloadCardMedia(mème.type, mediaPath));
         });
 
-        attachInteractions();
+        Promise.all(preloadPromises).then(() => {
+            videoGrid.innerHTML = '';
+            cardsToInsert.forEach(card => videoGrid.appendChild(card));
+            attachInteractions();
+        });
     }
 
     // 3. Système de tri
