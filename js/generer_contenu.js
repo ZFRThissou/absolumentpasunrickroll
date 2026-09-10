@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Affichage des skeletons au démarrage ---
     if (!videoGrid.querySelector('.skeleton-card')) {
-        renderSkeletons(videoGrid);
+        const { fragment } = createSkeletonCards(MEMES_PER_PAGE);
+        videoGrid.innerHTML = '';
+        videoGrid.appendChild(fragment);
     }
 
     let currentMemesData = []; 
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function renderGrid(dataList, append = false) {
+        function renderGrid(dataList, append = false) {
         if (!append) {
             currentPage = 1;
             activeMemesList = dataList;
@@ -148,6 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!append && memesToRender.length === 0) {
             videoGrid.innerHTML = '<p style="color: black">Aucun mème trouvé.</p>';
             return;
+        }
+
+        // En mode "append" (scroll infini), on affiche tout de suite des
+        // skeletons à la suite des cartes existantes : ça donne un feedback
+        // immédiat ET ça agrandit scrollHeight, ce qui empêche le scroll
+        // listener de redéclencher un chargement tant qu'on n'a pas fini.
+        let skeletonElements = [];
+        if (append) {
+            const { fragment, elements } = createSkeletonCards(memesToRender.length);
+            videoGrid.appendChild(fragment);
+            skeletonElements = elements;
         }
 
         const preloadPromises = [];
@@ -204,13 +217,17 @@ document.addEventListener('DOMContentLoaded', function() {
             preloadPromises.push(preloadCardMedia(type, mediaPath));
         });
 
-        // On attend que toutes les miniatures de cette page soient prêtes
-        // avant de les injecter d'un coup dans la grille.
         Promise.all(preloadPromises).then(() => {
-            if (!append) {
-                videoGrid.innerHTML = ''; // supprime le skeleton
+            if (append) {
+                // On retire les skeletons de fin de grille et on les remplace
+                // par les vraies cartes, à la même position.
+                const referenceNode = skeletonElements[0] || null;
+                cardsToInsert.forEach(card => videoGrid.insertBefore(card, referenceNode));
+                skeletonElements.forEach(el => el.remove());
+            } else {
+                videoGrid.innerHTML = '';
+                cardsToInsert.forEach(card => videoGrid.appendChild(card));
             }
-            cardsToInsert.forEach(card => videoGrid.appendChild(card));
 
             if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
 
@@ -218,20 +235,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function renderSkeletons(container, count = 12) {
-        let html = '';
+    function createSkeletonCards(count) {
+        const fragment = document.createDocumentFragment();
+        const elements = [];
         for (let i = 0; i < count; i++) {
-            html += `
-                <div class="skeleton-card">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-line title"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
+            const card = document.createElement('div');
+            card.className = 'skeleton-card';
+            card.innerHTML = `
+                <div class="skeleton-thumb"></div>
+                <div class="skeleton-info">
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line short"></div>
                 </div>
             `;
+            fragment.appendChild(card);
+            elements.push(card);
         }
-        container.innerHTML = html;
+        return { fragment, elements };
     }
 
     function initSortEvents() {
