@@ -5,13 +5,13 @@
 // visiteur (fuseau horaire différent, horloge mal réglée, etc.).
 // ============================================================
 
-const BIRTHDAY_MONTH = 1;  // janvier
-const BIRTHDAY_DAY = 23;
+const BIRTHDAY_MONTH = 9;  // janvier
+const BIRTHDAY_DAY = 11;
 
 const RICKROLL_ASSETS = {
     video: 'image/rickroll.mp4',
     audio: 'image/rickroll.mp3',
-    image: 'image/rickroll.jpg'
+    image: 'image/rickroll.png'
 };
 
 // On expose une promesse que les autres scripts peuvent "attendre"
