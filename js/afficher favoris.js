@@ -45,16 +45,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     likes: statsMap[m.title]?.likes || 0,
                     date: statsMap[m.title]?.date_ajout ? new Date(statsMap[m.title].date_ajout) : new Date(0)
                 }));
-
-                renderGrid(currentMemesData);
-                initSortEvents();
-                initSearch();
             })
             .catch(err => {
                 console.error("Erreur chargement stats:", err);
-                // Si la DB échoue, on affiche quand même les favoris sans les likes (le loader partira ici)
+                // Si la DB échoue, on affiche quand même les favoris sans les likes
                 currentMemesData = allFavs.map(m => ({ ...m, likes: 0 }));
+            })
+            .finally(() => {
+                // Qu'on ait réussi ou échoué à récupérer les likes, l'affichage
+                // et les interactions (tri, recherche) doivent toujours s'activer.
                 renderGrid(currentMemesData);
+                initSortEvents();
                 initSearch();
             });
     }
@@ -168,6 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'name-desc': currentMemesData.sort((a,b) => b.title.localeCompare(a.title)); break;
             case 'likes-desc': currentMemesData.sort((a,b) => b.likes - a.likes); break;
             case 'likes-asc': currentMemesData.sort((a,b) => a.likes - b.likes); break;
+            case 'date-desc': currentMemesData.sort((a,b) => b.date - a.date); break;
+            case 'date-asc': currentMemesData.sort((a,b) => a.date - b.date); break;
         }
         renderGrid(currentMemesData);
     }
