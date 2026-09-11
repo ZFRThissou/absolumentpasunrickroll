@@ -284,35 +284,6 @@ body {
     margin: 20px;
 }
 
-/* Conteneur pour centrer le loader dans la grille */
-.loader-container {
-    grid-column: 1 / -1; /* Prend toute la largeur de la grille */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 50px;
-    color: #fff; /* À adapter selon ton thème */
-}
-
-/* Le cercle qui tourne */
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.1);
-    border-top: 5px solid #000; /* Ta couleur principale */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
-}
-
-/* L'animation de rotation */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-
 /* Skeleton loading (effet "shimmer") */
 .skeleton-card {
     background: #ecf0f1;
