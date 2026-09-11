@@ -5,14 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMemesData = []; // Stockage local des favoris pour le tri
     let currentSortType = '';
 
-    // --- AJOUT : Affichage du loader au démarrage ---
+    // --- Affichage des skeletons au démarrage ---
     function showLoader() {
-        videoGrid.innerHTML = `
-            <div class="loader-container">
-                <div class="spinner"></div>
-                <p style="color: white; margin-top: 10px;">Chargement de vos favoris...</p>
-            </div>
-        `;
+        const { fragment } = createSkeletonCards(12);
+        videoGrid.innerHTML = '';
+        videoGrid.appendChild(fragment);
     }
 
     // 1. Initialisation : Récupérer et centraliser tous les favoris
@@ -72,13 +69,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Fonction d'affichage
     function renderGrid(dataList) {
-        // Le innerHTML = '' supprime le loader
-        videoGrid.innerHTML = '';
+        videoGrid.innerHTML = ''; // supprime les skeletons/messages précédents
 
         if (dataList.length === 0) {
             videoGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Aucun mème favori enregistré.</p>';
             return;
         }
+
+        // On affiche des skeletons pendant le préchargement, exactement
+        // comme sur les autres pages.
+        const { fragment, elements: skeletonElements } = createSkeletonCards(dataList.length);
+        videoGrid.appendChild(fragment);
+
+        const preloadPromises = [];
+        const cardsToInsert = [];
 
         dataList.forEach(mème => {
             const title = mème.title;
@@ -87,13 +91,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (mème.type === 'video') {
                 mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                cardContent = `<video class="open-modal-play"><source src="${mediaPath}"></video>`;
+                cardContent = `<video class="open-modal-play" preload="metadata"><source src="${mediaPath}"></video>`;
             } else if (mème.type === 'audio') {
                 mediaPath = `image/mèmes/audios/${title}.${ext}`;
                 cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
             } else if (mème.type === 'image') {
                 mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" class="open-modal-play" alt="Image thumbnail">`;
+                cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
             }
 
             const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
@@ -124,10 +128,18 @@ document.addEventListener('DOMContentLoaded', function() {
             card.onclick = () => {
                 openMemeModal(mème, mediaPath, false);
             };
-            videoGrid.appendChild(card);
+
+            cardsToInsert.push(card);
+            preloadPromises.push(preloadCardMedia(mème.type, mediaPath));
         });
 
-        attachInteractions();
+        Promise.all(preloadPromises).then(() => {
+            const referenceNode = skeletonElements[0] || null;
+            cardsToInsert.forEach(card => videoGrid.insertBefore(card, referenceNode));
+            skeletonElements.forEach(el => el.remove());
+
+            attachInteractions();
+        });
     }
 
     // 3. Système de tri
