@@ -602,3 +602,52 @@ body {
         max-height: 50vh;
     }
 }
+
+
+
+/* Easter egg : Rickroll (Konami Code) - plein écran */
+#rickroll-overlay {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #000;
+    z-index: 2147483647; /* valeur max possible, passe au-dessus de tout */
+}
+
+#rickroll-overlay.active {
+    display: block !important;
+}
+
+#rickroll-overlay iframe {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+.rickroll-close {
+    position: fixed !important;
+    top: 15px !important;
+    right: 20px !important;
+    z-index: 2147483647;
+    color: #fff;
+    font-size: 34px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+}
