@@ -5,8 +5,8 @@
 // visiteur (fuseau horaire différent, horloge mal réglée, etc.).
 // ============================================================
 
-const BIRTHDAY_MONTH = 9;  // janvier
-const BIRTHDAY_DAY = 11;
+const BIRTHDAY_MONTH = 1;  // janvier
+const BIRTHDAY_DAY = 23;
 
 const RICKROLL_ASSETS = {
     video: 'image/rickroll.mp4',
