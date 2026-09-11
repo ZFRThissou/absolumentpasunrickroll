@@ -246,18 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 4. Gestion des clics
     function attachInteractions() {
-        // Play Sound
-        document.querySelectorAll('.button').forEach(btn => {
-            btn.onclick = (e) => {
-                let audio = document.getElementById('audio') || document.createElement('audio');
-                audio.id = 'audio';
-                if (!audio.parentElement) document.body.appendChild(audio);
-                audio.src = e.target.getAttribute('data-sound');
-                audio.currentTime = 0;
-                audio.play();
-            };
-        });
-
         // Retirer des favoris
         document.querySelectorAll('.remove-from-favorites').forEach(btn => {
             btn.onclick = async function() {
