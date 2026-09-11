@@ -226,8 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
             cardsToInsert.forEach(card => videoGrid.insertBefore(card, referenceNode));
             skeletonElements.forEach(el => el.remove());
 
-            if (memesToRender.some(m => m.typeMeme === 'audio')) initAudioButtons();
-
             isFetching = false;
         });
     }
@@ -441,18 +439,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);
-    }
-
-    function initAudioButtons() {
-        document.querySelectorAll('.button').forEach(btn => {
-            btn.onclick = function(e) {
-                const audio = document.getElementById('audio');
-                if (audio) {
-                    audio.src = e.target.getAttribute('data-sound');
-                    audio.currentTime = 0;
-                    audio.play();
-                }
-            };
-        });
     }
 });
