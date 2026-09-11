@@ -7,24 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- AJOUT : Affichage du loader au démarrage ---
     function showLoader() {
-        renderSkeletons(videoGrid);
-    }
-
-
-    function renderSkeletons(container, count = 12) {
-        let html = '';
-        for (let i = 0; i < count; i++) {
-            html += `
-                <div class="skeleton-card">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-line title"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
+        videoGrid.innerHTML = `
+            <div class="loader-container">
+                <div class="spinner"></div>
+                <p style="color: white; margin-top: 10px;">Chargement de vos favoris...</p>
+            </div>
+        `;
     }
 
     // 1. Initialisation : Récupérer et centraliser tous les favoris
@@ -82,47 +70,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function preloadCardMedia(type, mediaPath) {
-        // Les audios n'ont pas de miniature visuelle à précharger.
-        if (type === 'audio') return Promise.resolve();
-    
-        return new Promise((resolve) => {
-            let done = false;
-            const finish = () => {
-                if (done) return;
-                done = true;
-                resolve();
-            };
-            const timeout = setTimeout(finish, 4000); // filet de sécurité
-    
-            if (type === 'image') {
-                const img = new Image();
-                img.onload = () => { clearTimeout(timeout); finish(); };
-                img.onerror = () => { clearTimeout(timeout); finish(); };
-                img.src = mediaPath;
-            } else if (type === 'video') {
-                const video = document.createElement('video');
-                video.preload = 'metadata';
-                video.muted = true;
-                video.onloadeddata = () => { clearTimeout(timeout); finish(); };
-                video.onerror = () => { clearTimeout(timeout); finish(); };
-                video.src = mediaPath;
-            } else {
-                clearTimeout(timeout);
-                finish();
-            }
-        });
-    }
-    
     // 2. Fonction d'affichage
-        function renderGrid(dataList) {
+    function renderGrid(dataList) {
+        // Le innerHTML = '' supprime le loader
+        videoGrid.innerHTML = '';
+
         if (dataList.length === 0) {
             videoGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Aucun mème favori enregistré.</p>';
             return;
         }
-
-        const preloadPromises = [];
-        const cardsToInsert = [];
 
         dataList.forEach(mème => {
             const title = mème.title;
@@ -162,22 +118,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             card.querySelector('.open-modal-play').onclick = (e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Empêche le clic sur la carte parente
                 openMemeModal(mème, mediaPath, true);
             };
             card.onclick = () => {
                 openMemeModal(mème, mediaPath, false);
             };
-
-            cardsToInsert.push(card);
-            preloadPromises.push(preloadCardMedia(mème.type, mediaPath));
+            videoGrid.appendChild(card);
         });
 
-        Promise.all(preloadPromises).then(() => {
-            videoGrid.innerHTML = '';
-            cardsToInsert.forEach(card => videoGrid.appendChild(card));
-            attachInteractions();
-        });
+        attachInteractions();
     }
 
     // 3. Système de tri
@@ -210,7 +160,17 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGrid(currentMemesData);
     }
 
-    function openMemeModal(mème, mediaPath, shouldPlay){
+    async function openMemeModal(mème, mediaPath, shouldPlay){
+        // Easter egg : le 23 janvier (anniversaire du site), on attend de
+        // savoir si l'API de date a répondu, puis on remplace le média par
+        // le rickroll, peu importe le mème réellement cliqué.
+        if (window.birthdayCheckPromise) {
+            await window.birthdayCheckPromise;
+        }
+        if (typeof getBirthdayMediaPath === 'function') {
+            mediaPath = getBirthdayMediaPath(mème.type, mediaPath);
+        }
+
         const modal = document.getElementById('meme-modal');
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
@@ -224,7 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = '';
-        desc.textContent = `${mème.desc ? mème.desc : "La description n'est pas encore disponible."}`;
+        desc.textContent = window.IS_SITE_BIRTHDAY
+            ? "🎉 Joyeux anniversaire au site ! Tu ne pensais quand même pas y échapper aujourd'hui..."
+            : `${mème.desc ? mème.desc : "La description n'est pas encore disponible."}`;
         if (mème.type === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
