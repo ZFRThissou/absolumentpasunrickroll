@@ -355,7 +355,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function openMemeModal(mème, mediaPath, shouldPlay) {
+    async function openMemeModal(mème, mediaPath, shouldPlay) {
+        // Easter egg : le 23 janvier (anniversaire du site), on attend de
+        // savoir si l'API de date a répondu, puis on remplace le média par
+        // le rickroll, peu importe le mème réellement cliqué.
+        if (window.birthdayCheckPromise) {
+            await window.birthdayCheckPromise;
+        }
+        if (typeof getBirthdayMediaPath === 'function') {
+            mediaPath = getBirthdayMediaPath(mème.typeMeme, mediaPath);
+        }
+
         const modal = document.getElementById('meme-modal');
         const container = document.getElementById('modal-media-container');
         const title = document.getElementById('modal-title');
@@ -370,7 +380,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         title.textContent = mème.title;
         container.innerHTML = ''; 
-        desc.textContent = `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
+        desc.textContent = window.IS_SITE_BIRTHDAY
+            ? "🎉 Joyeux anniversaire au site ! Tu ne pensais quand même pas y échapper aujourd'hui..."
+            : `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
         if (mème.typeMeme === 'video') {
             const video = document.createElement('video');
             video.src = mediaPath;
