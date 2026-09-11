@@ -248,7 +248,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function attachInteractions() {
         // Retirer des favoris
         document.querySelectorAll('.remove-from-favorites').forEach(btn => {
-            btn.onclick = async function() {
+            btn.onclick = async function(e) {
+                e.stopPropagation(); // Empêche le clic de remonter jusqu'à la carte (et donc d'ouvrir la modale)
                 const title = this.getAttribute('data-title');
                 const type = this.getAttribute('data-type');
                 const favoritesKey = type + 'Favorites';
