@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /mèmeswars
+Disallow: /mèmeswars.html
+Disallow: /nouveau
+Disallow: /nouveau.html
+Disallow: /404.html
+
+Sitemap: https://absolumentpasunrickroll.netlify.app/sitemap.xml
