@@ -1,14 +1,7 @@
-# Pages obsolètes : on garde les fichiers mais on les fait passer pour inexistantes.
-# Le "404!" (avec le point d'exclamation) force la règle même si le fichier existe.
-# L'URL reste telle quelle dans la barre d'adresse, et le contenu servi est 404.html avec un vrai code 404.
+/nouveau          /404.html  404!
+/nouveau.html     /404.html  404!
+/nouveau/*        /404.html  404!
 
-/nouveaux          /404.html  404!
-/nouveaux.html     /404.html  404!
-/nouveaux/*        /404.html  404!
-
-/mèmewars          /404.html  404!
-/mèmewars.html     /404.html  404!
-/mèmewars/*        /404.html  404!
-/memewars          /404.html  404!
-/memewars.html     /404.html  404!
-/memewars/*        /404.html  404!
+/mèmeswars          /404.html  404!
+/mèmeswars.html     /404.html  404!
+/mèmeswars/*        /404.html  404!
