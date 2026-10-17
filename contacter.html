@@ -6,8 +6,9 @@
     <meta name="theme-color" content="#ffffff">
     <link href="css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="image/logo/logo.png">
-    <title>Nous contacter | Absolumentpasunrickroll</title>
-    <meta name="description" content="Retrouve Absolumentpasunrickroll sur YouTube, Discord, Instagram, TikTok et Twitch.">
+    <!-- Consentement + Analytics (SANS AdSense sur cette page) : doit rester le PREMIER script -->
+    <script src="js/consent.js" data-adsense="false"></script>
+    <title>Absolumentpasunrickroll</title>
     <style>
         .texte {
             font-size: 36px;
@@ -33,21 +34,10 @@
         }
         .social-link img {
             height: 35px;
-            width: auto;
             width: 35px;
             margin-right: 10px;
         }
     </style>
-    <!-- Analytics -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QJVPT21ZK"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-3QJVPT21ZK');
-    </script>
-    <!-- End Google Analytics -->
 </head>
 <body>
     <div class="topbar">
@@ -82,41 +72,42 @@
         <p class="texte">Retrouvez-nous sur :</p>
         <ul class="social-links">
             <li>
-                <a href="https://www.youtube.com/@AbsolumentPasUnRickRoll" target="_blank" class="social-link">
+                <a href="https://www.youtube.com/@AbsolumentPasUnRickRoll" target="_blank" rel="noopener" class="social-link">
                     <img src="image/logo/YouTube.png" alt="YouTube Icon">
                     <span>YouTube</span>
                 </a>
             </li>
             <li>
-                <a href="https://discord.gg/gP6p4P5Zzr" target="_blank" class="social-link">
+                <a href="https://discord.gg/gP6p4P5Zzr" target="_blank" rel="noopener" class="social-link">
                     <img src="image/logo/Discord.png" alt="Discord Icon">
                     <span>Discord</span>
                 </a>
             </li>
             <li>
-                <a href="https://www.instagram.com/absolumentpasunrickroll/" target="_blank" class="social-link">
+                <a href="https://www.instagram.com/absolumentpasunrickroll/" target="_blank" rel="noopener" class="social-link">
                     <img src="image/logo/Instagram.png" alt="Instagram Icon">
                     <span>Instagram</span>
                 </a>
             </li>
             <li>
-                <a href="https://www.tiktok.com/@absolumentpasunrickroll" target="_blank" class="social-link">
+                <a href="https://www.tiktok.com/@absolumentpasunrickroll" target="_blank" rel="noopener" class="social-link">
                     <img src="image/logo/Tiktok.png" alt="Tiktok Icon">
                     <span>TikTok</span>
                 </a>
             </li>
             <li>
-                <a href="https://www.twitch.tv/absolumentpasunrickroll" target="_blank" class="social-link">
+                <a href="https://www.twitch.tv/absolumentpasunrickroll" target="_blank" rel="noopener" class="social-link">
                     <img src="image/logo/Twitch.png" alt="Twitch Icon">
                     <span>Twitch</span>
                 </a>
             </li>
             <li>
-                <a href="mailto:absolumentpasunrickroll@gmail.com" target="_blank" class="social-link">
+                <a href="mailto:absolumentpasunrickroll@gmail.com" class="social-link">
                     <img src="image/logo/Gmail.png" alt="Gmail Icon">
                     <span>Mail</span>
                 </a>
             </li>
         </ul>
+    </div>
 </body>
 </html>
