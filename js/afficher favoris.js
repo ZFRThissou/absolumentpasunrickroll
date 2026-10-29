@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
             }
 
-            const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
+            const ShareURL = getShareUrl(mème.title);
             const card = document.createElement('div');
             card.classList.add('video-card');
             card.style.cursor = "pointer";
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const globalAudio = document.getElementById('audio');
         const desc = document.getElementById('modal-description');
         const lastUrl = window.location.pathname;
-        const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
+        const newUrl = getShareUrl(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
 
         modal.style.display = 'block';
