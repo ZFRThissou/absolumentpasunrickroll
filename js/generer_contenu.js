@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // dans js/chargement.js (partagé avec afficher favoris.js), voir
     // <head> de la page.
 
-        function renderGrid(dataList, append = false) {
+    function renderGrid(dataList, append = false) {
         if (!append) {
             currentPage = 1;
             activeMemesList = dataList;
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
             }
 
-            const ShareURL = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
+            const ShareURL = getShareUrl(mème.title);
             const cardHTML = document.createElement('div');
             cardHTML.classList.add('video-card');
             cardHTML.style.cursor = "pointer";
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const globalAudio = document.getElementById('audio'); // Récupération globale
         const desc = document.getElementById('modal-description');
         const lastUrl = window.location.pathname;
-        const newUrl = 'https://absolumentpasunrickroll.netlify.app/' + '?meme=' + encodeURIComponent(mème.title);
+        const newUrl = getShareUrl(mème.title);
         history.pushState({ title: mème.title }, mème.title, newUrl);
         const notDesc = ["La description n'est pas encore disponible.","Traquille ça arrive (dans 1 an environ).","Bon tu vois bien que y'a pas de description mais ça arrive.","Je suis pas sûr mais je crois que y'a pas de description après elle viendra peut être mais bon avec un site aussi grand et beaucoup de description a faire je sais pas si c'est avec elle que je vait commencer après je suis quasiment sûr que avant la fin de l'année il y aura une description mais quasiment.","Message de la france non.","En faite non.","Je crois pas nannnn."];
 
