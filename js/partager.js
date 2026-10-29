@@ -1,3 +1,7 @@
+function getShareUrl(title) {
+    return window.location.origin + '/?meme=' + encodeURIComponent(title);
+}
+
 function shareVideo(videoUrl, videoTitle) {
     if (navigator.share) {
         navigator.share({
