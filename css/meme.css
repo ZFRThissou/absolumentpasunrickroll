@@ -1,0 +1,118 @@
+/*
+ * meme.css : styles propres aux pages individuelles de mèmes (/meme/...).
+ * Ces pages sont générées par python/generer_pages.py. Le reste (barre du haut,
+ * menu de gauche, .main-content) vient de style.css : on ne le redéfinit pas.
+ */
+
+.meme-page {
+    align-items: center;
+    min-width: 0; /* évite qu'un long titre élargisse la page (le body est en flex) */
+}
+
+.meme-fil,
+.meme-fiche,
+.meme-lies {
+    width: 100%;
+    max-width: 800px;
+}
+
+.meme-fil {
+    font-size: 0.9em;
+    color: #606060;
+    margin-bottom: 10px;
+}
+
+.meme-fil a {
+    color: inherit;
+}
+
+.meme-fiche h1 {
+    margin: 0 0 5px;
+    font-size: 1.6em;
+    overflow-wrap: anywhere; /* certains titres de mèmes sont très longs */
+}
+
+.meme-type {
+    margin: 0 0 15px;
+    color: #606060;
+    font-size: 0.9em;
+}
+
+/* --- Le lecteur --- */
+.meme-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000; /* fond noir pour les vidéos et les images, comme la modale */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.meme-media video,
+.meme-media img {
+    display: block;
+    max-width: 100%;
+    max-height: 65vh;
+}
+
+.meme-media-audio {
+    background: #ecf0f1;
+    padding: 30px 15px;
+}
+
+.meme-media audio {
+    width: 100%;
+}
+
+/* --- Boutons Télécharger / Partager (même rouge que le bouton "Play Sound") --- */
+.meme-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px 0 25px;
+}
+
+.meme-bouton {
+    background: #ff4747;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 22px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.meme-bouton:active {
+    transform: scale(0.95);
+}
+
+/* --- Texte --- */
+.meme-contexte h2,
+.meme-lies h2 {
+    font-size: 1.2em;
+    margin: 0 0 10px;
+}
+
+.meme-contexte p {
+    line-height: 1.6;
+    margin: 0 0 10px;
+}
+
+.meme-lies {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.meme-lies ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.meme-lies li {
+    margin: 6px 0;
+}
