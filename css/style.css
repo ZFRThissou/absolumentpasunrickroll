@@ -622,3 +622,28 @@ body {
     line-height: 44px;
     text-align: center;
 }
+
+
+/* Le titre d'une carte est un vrai lien vers /meme/... (c'est ce que suivent
+   les moteurs de recherche), mais il doit rester aussi discret qu'un titre. */
+.video-card .video-info h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.video-card .video-info h3 a:hover {
+    text-decoration: underline;
+}
+
+/* Lien "Ouvrir la page de ce mème" dans la modale */
+.modal-lien-page {
+    display: inline-block;
+    margin-top: 10px;
+    color: #ff4747;
+    font-weight: bold;
+}
+
+/* Sans cette règle, display:inline-block ci-dessus écrase l'attribut HTML "hidden" */
+.modal-lien-page[hidden] {
+    display: none;
+}
