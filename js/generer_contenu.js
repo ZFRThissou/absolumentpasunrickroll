@@ -1,3 +1,7 @@
+// Page d'accueil, vidéos, audios, images : affichage de la grille de mèmes.
+// La carte, la modale et le tri sont dans meme-ui.js (partagé avec la page
+// des favoris). Ici il ne reste que ce qui est propre à ces pages : le
+// chargement des données, le défilement infini et l'ajout aux favoris.
 document.addEventListener('DOMContentLoaded', function() {
     // Évite d'exécuter le script deux fois si chargé en double
     if (window.__genererContenuInitialized) return;
@@ -37,12 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
         videoGrid.appendChild(fragment);
     }
 
-    // Récupération des données (JSON local + Stats DB)
+    // Récupération des données (JSON local + Stats DB + adresses des pages /meme/)
     Promise.all([
         fetch('data/mèmes.json').then(res => res.json()),
         fetch('/.netlify/functions/get-all-likes')
             .then(res => res.ok ? res.json() : [])
-            .catch(() => [])
+            .catch(() => []),
+        chargerSlugs() // remplit la table des slugs utilisée par creerCarteMeme (meme-ui.js)
     ])
     .then(([jsonData, stats]) => {
         let mèmesRaw = [];
@@ -79,35 +84,24 @@ document.addEventListener('DOMContentLoaded', function() {
             sortMemes('name-asc');
         }
         
-        initSortEvents();
+        initialiserMenuTri((type) => {
+            currentSortType = type;
+            sortMemes(type);
+        });
         if (typeof initializeSearch === 'function') {
             initializeSearch(currentMemesData, (filteredList) => {
                 renderGrid(filteredList, false);
             });
         }
-        const urlParams = new URLSearchParams(window.location.search);
-        const memeTitleFromUrl = urlParams.get('meme');
-        if (memeTitleFromUrl) {
-            const mèmeToOpen = currentMemesData.find(m => m.title === memeTitleFromUrl);
-            if (mèmeToOpen) {
-                // Déterminer le chemin du média selon le type
-                let mediaPath;
-                if (mèmeToOpen.typeMeme === 'video') mediaPath = `image/mèmes/vidéos/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
-                else if (mèmeToOpen.typeMeme === 'audio') mediaPath = `image/mèmes/audios/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
-                else if (mèmeToOpen.typeMeme === 'image') mediaPath = `image/mèmes/images/${mèmeToOpen.title}.${mèmeToOpen.ext}`;
-                
-                openMemeModal(mèmeToOpen, mediaPath, false);
-            }
-        }
     })
     .catch(error => {
         console.error('Erreur:', error);
-        videoGrid.innerHTML = '<p style="color: white;">Erreur de chargement des données.</p>';
+        videoGrid.innerHTML = '<p style="color: black;">Erreur de chargement des données.</p>';
     });
 
-    // preloadCardMedia() et createSkeletonCards() sont maintenant définies
-    // dans js/chargement.js (partagé avec afficher favoris.js), voir
-    // <head> de la page.
+    // preloadCardMedia() et createSkeletonCards() sont définies dans
+    // js/chargement.js ; creerCarteMeme(), trierMemes() et la modale dans
+    // js/meme-ui.js (voir <head> de la page).
 
     function renderGrid(dataList, append = false) {
         if (!append) {
@@ -139,54 +133,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const cardsToInsert = [];
 
         memesToRender.forEach(mème => {
-            const title = mème.title;
-            const ext = mème.ext;
-            const type = mème.typeMeme;
-            let mediaPath, cardContent;
+            const { carte, mediaPath } = creerCarteMeme(mème);
 
-            if (type === 'video') {
-                mediaPath = `image/mèmes/vidéos/${title}.${ext}`;
-                cardContent = `<video class="open-modal-play" preload="metadata"><source src="${mediaPath}"></video>`;
-            } else if (type === 'audio') {
-                mediaPath = `image/mèmes/audios/${title}.${ext}`;
-                cardContent = `<button class="button open-modal-play" data-sound="${mediaPath}">Play Sound</button>`;
-            } else if (type === 'image') {
-                mediaPath = `image/mèmes/images/${title}.${ext}`;
-                cardContent = `<img src="${mediaPath}" loading="lazy" class="open-modal-play" alt="Image thumbnail">`;
-            }
+            // Seule différence avec la page des favoris : ici le cœur AJOUTE le mème
+            const favKey = (pageType === 'index') ? `${mème.typeMeme}Favorites` : pageType;
+            updateFavoriteButton(carte.querySelector('.add-to-favorites'), mème, favKey);
 
-            const ShareURL = getShareUrl(mème.title);
-            const cardHTML = document.createElement('div');
-            cardHTML.classList.add('video-card');
-            cardHTML.style.cursor = "pointer";
-            cardHTML.innerHTML = `
-                ${cardContent}
-                <div class="video-info">
-                    <h3>${title}</h3>
-                    <div class="video-actions">
-                        <div class="favorite-container">
-                            <div class="add-to-favorites"></div>
-                            <span class="like-count" id="count-${title.replace(/\s+/g, '-')}">${mème.likes}</span>
-                        </div>
-                        <a class="download-button" onclick="event.stopPropagation()" href="${mediaPath}" download=""><img src="image/icones/telechargements.png" alt="Download Icon"></a>
-                        <img class="partage-button" src="image/icones/partager.png" alt="Share Icon" onclick="event.stopPropagation(); shareVideo('${ShareURL}', '${title}')">
-                    </div>
-                </div>
-            `;
-            cardHTML.querySelector('.open-modal-play').onclick = (e) => {
-                e.stopPropagation();
-                openMemeModal(mème, mediaPath, true);
-            };
-            cardHTML.onclick = () => {
-                openMemeModal(mème, mediaPath, false);
-            };
-
-            const favoriteButton = cardHTML.querySelector('.add-to-favorites');
-            const favKey = (pageType === 'index') ? `${type}Favorites` : pageType;
-            updateFavoriteButton(favoriteButton, mème, favKey);
-
-            cardsToInsert.push(cardHTML);
-            preloadPromises.push(preloadCardMedia(type, mediaPath));
+            cardsToInsert.push(carte);
+            preloadPromises.push(preloadCardMedia(mème.typeMeme, mediaPath));
         });
 
         Promise.all(preloadPromises).then(() => {
@@ -200,28 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             isFetching = false;
         });
-    }
-
-
-    function initSortEvents() {
-        const btn = document.getElementById('sort-button');
-        const menu = document.getElementById('sort-menu');
-        if (!btn || !menu) return;
-
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            menu.classList.toggle('active');
-        };
-
-        document.querySelectorAll('.sort-option').forEach(opt => {
-            opt.onclick = function() {
-                currentSortType = this.getAttribute('data-sort');
-                sortMemes(currentSortType);
-                menu.classList.remove('active');
-            };
-        });
-
-        window.onclick = () => menu.classList.remove('active');
     }
 
     window.addEventListener('scroll', () => {
@@ -242,16 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function sortMemes(type) {
-        switch(type) {
-            case 'name-asc': currentMemesData.sort((a,b) => a.title.localeCompare(b.title)); break;
-            case 'name-desc': currentMemesData.sort((a,b) => b.title.localeCompare(a.title)); break;
-            case 'likes-desc': currentMemesData.sort((a,b) => b.likes - a.likes); break;
-            case 'likes-asc': currentMemesData.sort((a,b) => a.likes - b.likes); break;
-            case 'date-desc': currentMemesData.sort((a,b) => b.date - a.date); break;
-            case 'date-asc': currentMemesData.sort((a,b) => a.date - b.date); break;
-            case 'duration-desc': currentMemesData.sort((a,b) => b.duree - a.duree); break;
-            case 'duration-asc': currentMemesData.sort((a,b) => a.duree - b.duree); break;
-        }
+        trierMemes(currentMemesData, type);
         renderGrid(currentMemesData, false);
     }
 
@@ -296,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentSortType.includes('likes')) {
                     sortMemes(currentSortType);
                 } else {
-                    const countSpan = document.getElementById(`count-${mèmeData.title.replace(/\s+/g, '-')}`);
+                    const countSpan = document.getElementById(getIdCompteur(mèmeData.title));
                     if (countSpan) countSpan.textContent = data.nouveauxLikes;
                     const img = button.querySelector('img');
                     img.src = !isFavorite ? 'image/icones/favoris_cliquer.png' : 'image/icones/favoris.png';
@@ -305,93 +228,5 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) { 
             console.error('Erreur DB:', e); 
         }
-    }
-
-    async function openMemeModal(mème, mediaPath, shouldPlay) {
-        // Easter egg : le 23 janvier (anniversaire du site), on attend de
-        // savoir si l'API de date a répondu, puis on remplace le média par
-        // le rickroll, peu importe le mème réellement cliqué.
-        if (window.birthdayCheckPromise) {
-            await window.birthdayCheckPromise;
-        }
-        if (typeof getBirthdayMediaPath === 'function') {
-            mediaPath = getBirthdayMediaPath(mème.typeMeme, mediaPath);
-        }
-
-        const modal = document.getElementById('meme-modal');
-        const container = document.getElementById('modal-media-container');
-        const title = document.getElementById('modal-title');
-        const globalAudio = document.getElementById('audio'); // Récupération globale
-        const desc = document.getElementById('modal-description');
-        const lastUrl = window.location.pathname;
-        const newUrl = getShareUrl(mème.title);
-        history.pushState({ title: mème.title }, mème.title, newUrl);
-        const notDesc = ["La description n'est pas encore disponible.","Traquille ça arrive (dans 1 an environ).","Bon tu vois bien que y'a pas de description mais ça arrive.","Je suis pas sûr mais je crois que y'a pas de description après elle viendra peut être mais bon avec un site aussi grand et beaucoup de description a faire je sais pas si c'est avec elle que je vait commencer après je suis quasiment sûr que avant la fin de l'année il y aura une description mais quasiment.","Message de la france non.","En faite non.","Je crois pas nannnn."];
-
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        title.textContent = mème.title;
-        container.innerHTML = ''; 
-        desc.textContent = window.IS_SITE_BIRTHDAY
-            ? "🎉 Joyeux anniversaire au site ! Tu ne pensais quand même pas y échapper aujourd'hui..."
-            : `${mème.desc ? mème.desc : notDesc[getRandomInt(notDesc.length)]}`;
-        if (mème.typeMeme === 'video') {
-            const video = document.createElement('video');
-            video.src = mediaPath;
-            video.controls = true;
-            container.appendChild(video);
-            if (shouldPlay) video.play();
-            
-        } else if (mème.typeMeme === 'image') {
-            const img = document.createElement('img');
-            img.src = mediaPath;
-            container.appendChild(img);
-        } else if (mème.typeMeme === 'audio') {
-            const btnPlay = document.createElement('button');
-            btnPlay.className = 'button';
-            btnPlay.textContent = 'Play Sound';
-            container.appendChild(btnPlay);
-            if (globalAudio) {
-                btnPlay.onclick = () => {
-                    globalAudio.src = mediaPath;
-                    globalAudio.currentTime = 0;
-                    globalAudio.play();
-                };
-                if (shouldPlay) {
-                    globalAudio.src = mediaPath;
-                    globalAudio.play();
-                }
-            }
-        }
-        const closeModal = () => {
-            modal.style.display = 'none';
-            container.innerHTML = '';
-            if (globalAudio) globalAudio.pause();
-            document.body.style.overflow = '';
-            history.pushState({}, '', lastUrl);
-        };
-        const closeBtn = document.querySelector('.close-modal');
-        closeBtn.onclick = closeModal;
-        window.onclick = (event) => {
-            if (event.target == modal) closeModal();
-        };
-        const escHandler = (event) => {
-            if (event.key === "Escape") {
-                closeModal();
-                window.removeEventListener('keydown', escHandler);
-            }
-        };
-        window.addEventListener('keydown', escHandler);
-    }
-
-    window.onpopstate = function(event) {
-        const modal = document.getElementById('meme-modal');
-        if (modal && modal.style.display === 'block') {
-            document.querySelector('.close-modal').click();
-        }
-    };
-
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
     }
 });
