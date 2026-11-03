@@ -1,0 +1,5 @@
+# Fichiers créés automatiquement à chaque déploiement par python/generer_pages.py
+meme/
+sitemap.xml
+data/slugs.json
+__pycache__/
