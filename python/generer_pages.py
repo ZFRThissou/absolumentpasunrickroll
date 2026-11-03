@@ -11,9 +11,9 @@ titre, son média et sa description : le contenu est lisible sans JavaScript.
 
 Quand est-ce qu'il tourne ?
 ---------------------------
-Automatiquement à CHAQUE déploiement Netlify (voir netlify.toml). Les pages
-générées ne sont donc jamais commitées dans GitHub : le dossier meme/ et le
-fichier sitemap.xml sont recréés à partir de data/mèmes.json à chaque fois.
+Automatiquement à CHAQUE déploiement Netlify (voir netlify.toml). Les fichiers
+générés ne sont donc jamais commités dans GitHub : le dossier meme/, sitemap.xml
+et data/slugs.json sont recréés à partir de data/mèmes.json à chaque fois.
 Si tu ajoutes un mème ou une description, tu n'as rien d'autre à faire.
 
 Règle importante : indexer seulement les pages qui ont une description
@@ -52,6 +52,8 @@ SITE_URL = os.environ.get("SITE_URL", "https://absolumentpasunrickroll.netlify.a
 FICHIER_DONNEES = os.path.join(RACINE, "data", "mèmes.json")
 DOSSIER_PAGES = os.path.join(RACINE, "meme")
 FICHIER_SITEMAP = os.path.join(RACINE, "sitemap.xml")
+# Table titre -> slug lue par la grille (js/meme-ui.js) pour fabriquer les liens /meme/...
+FICHIER_SLUGS = os.path.join(RACINE, "data", "slugs.json")
 
 # Pour chaque clé du JSON : dossier du média, libellés et page de catégorie.
 # (Les noms de dossiers contiennent des accents : on les écrit tels quels.)
@@ -432,6 +434,12 @@ def main():
     print("generer_pages : %d pages créées dans meme/ (%d indexables avec description, %d en noindex)"
           % (len(memes), len(indexables), len(memes) - len(indexables)))
     print("generer_pages : sitemap.xml écrit avec %d URLs" % (len(PAGES_STATIQUES) + len(indexables)))
+
+    # Table titre -> slug pour le JavaScript de la grille (un seul endroit calcule les slugs : ici)
+    with open(FICHIER_SLUGS, "w", encoding="utf-8") as f:
+        json.dump({m["title"]: m["slug"] for m in memes}, f, ensure_ascii=False, separators=(",", ":"))
+    print("generer_pages : data/slugs.json écrit (%d mèmes)" % len(memes))
+
     for texte in avertissements:
         print("ATTENTION : " + texte, file=sys.stderr)
     for chemin in manquants:
