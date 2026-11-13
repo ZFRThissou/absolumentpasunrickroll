@@ -1,0 +1,4 @@
+# Netlify exécute cette commande à chaque déploiement, AVANT de publier le site.
+# Elle crée les pages meme/*.html et le sitemap.xml à partir de data/mèmes.json.
+[build]
+  command = "python3 python/generer_pages.py"

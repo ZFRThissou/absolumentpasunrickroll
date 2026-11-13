@@ -48,7 +48,11 @@ function levenshtein(a, b) {
 
 class TfIdfSearchIndex {
     constructor(items, titleKey = 'title') {
-        this.items = items;
+        // COPIE de la liste (et non la liste elle-même) : la grille trie sa liste
+        // sur place quand on change le tri. Si l'index gardait la liste d'origine,
+        // les mots calculés ci-dessous ne correspondraient plus aux bons mèmes
+        // et la recherche renverrait un mauvais résultat après chaque tri.
+        this.items = [...items];
         this.docTokens = items.map(item => tokenize(item[titleKey]));
 
         // Fréquence documentaire : dans combien de titres chaque mot apparaît.

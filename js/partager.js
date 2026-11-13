@@ -1,12 +1,9 @@
-function getShareUrl(title) {
-    return window.location.origin + '/?meme=' + encodeURIComponent(title);
-}
-
+// getShareUrl() (l'adresse à partager d'un mème) est dans meme-ui.js.
 function shareVideo(videoUrl, videoTitle) {
     if (navigator.share) {
         navigator.share({
             title: videoTitle,
-            text: `Regarde cette vidéo : ${videoTitle}`,
+            text: `Regarde ce mème : ${videoTitle}`,
             url: videoUrl
         })
         .then(() => console.log('Partagé avec succès'))
