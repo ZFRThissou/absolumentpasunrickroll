@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /404.html
+Disallow: /google1173ce25a1fcc62f.html
 
 Sitemap: https://absolumentpasunrickroll.netlify.app/sitemap.xml
